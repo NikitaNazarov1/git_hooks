@@ -7,11 +7,11 @@ Git commit-msg hook, works with jira tickets.
 If your branch name contains a reference to jira ticket, then script automatically adds "[XXX-1234] " to commit messages, unless they mention "XXX-1234" already.
 
 ###### EXAMPLE:
-Your branch name is `"task/ABC-1234/description"`.
+Your branch name is `"task/APD-1234/description"`.
 
 1. `$ git commit -m 'fix bug'`
 2. `$ git log`
- > [ABC-1234] Fix bug
+ > [APD-1234] Fix bug
 
 ### How to use this hook:
 1. Navigate to the hooks directory
@@ -28,7 +28,7 @@ You can go to the file: [commit-msg hook](https://github.com/NikitaNazarov1/git_
 branch_name = `git branch --no-color 2> /dev/null`[/^\* (.+)/, 1].to_s
 original_commit_message = File.read(ARGV[0]).strip
 
-pattern = /(APD-\d+)/i
+pattern = /(APD-\d+)/i # APD - jira project name, please replace it by yours
 
 if m = branch_name.match(pattern)
   jira_number = m.captures.first
@@ -40,4 +40,5 @@ if m = branch_name.match(pattern)
 end
 ```
 
+### Note that you need to replace your jira project key in the script!
 
