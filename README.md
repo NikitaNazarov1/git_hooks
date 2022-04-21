@@ -2,7 +2,7 @@
 
 There was mentioned the most helpful git hooks for Rails projects.
 
-### Add prefix with jira ticket to commit messages:
+## Add prefix with jira ticket to commit messages:
 Git commit-msg hook, works with jira tickets. 
 If your branch name contains a reference to jira ticket, then script automatically adds "[XXX-1234] " to commit messages, unless they mention "XXX-1234" already.
 
@@ -13,7 +13,7 @@ Your branch name is `"task/ABC-1234/description"`.
 2. `$ git log`
  > [ABC-1234] Fix bug
 
-##### How to use this hook:
+### How to use this hook:
 1. Navigate to the hooks directory
 > $ cd /my-git-repo/.git/hooks
 2. Create `commit-msg` file there
