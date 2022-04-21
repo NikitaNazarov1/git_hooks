@@ -16,7 +16,7 @@ Your branch name is `"task/APD-1234/description"`.
 ### How to use this hook:
 1. Navigate to the hooks directory
 > $ cd /my-git-repo/.git/hooks
-2. Create `commit-msg` file there
+2. Create `commit-msg` file there if it's absent
 > $ touch commit-msg
 3. Fill the created file with the following script:
 
@@ -42,3 +42,51 @@ end
 
 ### Note that you need to replace your jira project key in the script!
 
+## Run rubocop on changed files before commiting:
+This script runs rubocop on changed files after `git commit` command. If there is any linter errors, commit rollbacks.
+
+###### EXAMPLE:
+
+1. `$ git commit -m 'fix bug'`
+> Inspecting 1 file  
+> W
+> 
+> Offenses: W: Lint/DuplicateHashKey:
+
+2. `$ git log`
+> [JIRA-123] previous commit
+
+### How to use this hook:
+1. Navigate to the hooks directory
+> $ cd /my-git-repo/.git/hooks
+2. Create `pre-commit` file there if it's absent
+> $ touch pre-commit
+3. Fill the created file with the following script:
+
+You can go to the file: [pre-commit hook](https://github.com/NikitaNazarov1/git_hooks/blob/main/hooks/pre-commit). Or view the code bellow:
+
+```ruby
+#!/usr/bin/env ruby
+
+require 'english'
+require 'rubocop'
+
+ADDED_OR_MODIFIED = /A|AM|^M/.freeze
+
+changed_files = `git status --porcelain`.split(/\n/).
+    select { |file_name_with_status|
+      file_name_with_status =~ ADDED_OR_MODIFIED
+    }.
+    map { |file_name_with_status|
+      file_name_with_status.split(' ')[1]
+    }.
+    select { |file_name|
+      File.extname(file_name) == '.rb'
+    }.join(' ')
+
+system("rubocop #{changed_files}") unless changed_files.empty?
+
+exit $CHILD_STATUS.to_s[-1].to_i
+```
+
+### Note that pre-commit hook disabled by default, to enable this hook you need to run `chmod +x .git/hooks/pre-commit` in your repo!
