@@ -2,14 +2,6 @@
 #
 # Git commit-msg hook, works with jira tickets. If your branch name contains a reference to jira ticket, then
 # script automatically adds "[XXX-1234] " to commit messages, unless they mention "XXX-1234" already.
-#
-# EXAMPLE:
-#
-# branch name - "task/ABC-1234/description"
-#
-# console: git commit -m 'fix bug'
-# console: git log
-# > [ABC-1234] Fix bug
 
 
 branch_name = `git branch --no-color 2> /dev/null`[/^\* (.+)/, 1].to_s
