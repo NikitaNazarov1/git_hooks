@@ -1,2 +1,3 @@
-# git_hooks
-Git hooks usage on ruby
+# Git hooks usage for Rails projects
+
+
