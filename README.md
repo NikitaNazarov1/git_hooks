@@ -1,6 +1,6 @@
 # Git hooks usage
 
-There was mentioned the most helpful git hooks for Rails projects.
+There were mentioned the most helpful git hooks for Rails projects.
 
 ## Add prefix with jira ticket to commit messages:
 Git commit-msg hook, works with jira tickets. 
