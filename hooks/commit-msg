@@ -15,5 +15,5 @@ if m = branch_name.match(pattern)
   exit if original_commit_message.include?(jira_number)
 
   message = "[#{jira_number}] #{original_commit_message}"
-  File.open(commit_message_file, 'w') {|f| f.write message }
+  File.open(ARGV[0], 'w') {|f| f.write message }
 end
