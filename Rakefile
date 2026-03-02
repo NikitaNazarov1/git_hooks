@@ -10,6 +10,13 @@ rescue LoadError
   # RSpec not available
 end
 
+begin
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+rescue LoadError
+  # RuboCop not available
+end
+
 desc 'Sync hook templates from lib/git_hooks/templates to hooks/ (for manual install)'
 task :sync_hooks do
   templates_dir = File.expand_path('lib/git_hooks/templates', __dir__)

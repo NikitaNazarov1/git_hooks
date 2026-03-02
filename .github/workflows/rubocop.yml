@@ -1,4 +1,4 @@
-name: tests
+name: rubocop
 
 on:
   push:
@@ -6,19 +6,16 @@ on:
   pull_request:
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ruby: ['3.2']
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: '3.3'
           bundler-cache: true
 
-      - name: Run specs
-        run: bundle exec rake spec
+      - name: Run RuboCop
+        run: bundle exec rubocop
