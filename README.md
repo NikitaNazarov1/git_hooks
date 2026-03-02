@@ -3,7 +3,6 @@
 [![Gem Version](https://badge.fury.io/rb/git_hooks.svg)](https://badge.fury.io/rb/git_hooks)
 [![Build Status](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
 [![RuboCop](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/rubocop.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/rubocop.yml?query=branch%3Amain)
-[![Coverage Status](https://coveralls.io/repos/github/NikitaNazarov1/git_hooks/badge.svg?branch=main)](https://coveralls.io/github/NikitaNazarov1/git_hooks?branch=main)
 
 > Automate Jira ticket prefixes and RuboCop checks with git hooks. Built for Rails and Ruby projects.
 
