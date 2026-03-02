@@ -20,6 +20,8 @@ Then run:
 bundle exec git_hooks install
 ```
 
+### Note that pre-commit hook disabled by default, to enable this hook you need to run `chmod +x .git/hooks/pre-commit` in your repo!
+
 ### Install hooks in your repo
 
 From your project root (must be inside a git repo):
@@ -87,9 +89,10 @@ If your branch name contains a Jira ticket (e.g. `task/APD-1234/description`), t
 
 Configure the Jira project key when installing (e.g. `--jira APD` or `GIT_HOOKS_JIRA_PROJECT=APD`).
 
-### pre-commit — RuboCop on staged Ruby files
+### pre-commit — Protect default branch + RuboCop
 
-Runs RuboCop on staged `.rb` files. If there are offenses, the commit is aborted.
+1. **Blocks commits on `master` / `main`** — You must commit from a feature branch; direct commits to the default branch are rejected.
+2. **Runs RuboCop** on staged `.rb` files. If there are offenses, the commit is aborted.
 
 **Note:** The pre-commit hook is installed executable. If it doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-commit`.
 
