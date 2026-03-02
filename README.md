@@ -1,6 +1,6 @@
 # Git Hooks
 
-Git hooks for Rails projects: Jira ticket prefix in commit messages and RuboCop on staged files.
+Git hooks for Rails projects: Auto Jira ticket prefix in commit messages and RuboCop on staged files.
 
 ## Installation (as a gem)
 
