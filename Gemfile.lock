@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    git_hooks (0.1.0)
+    git_hooks (0.3.0)
 
 GEM
   remote: https://rubygems.org/
