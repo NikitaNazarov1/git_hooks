@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'git_hooks'
+require 'optparse'
 
 module GitHooks
   class CLI
@@ -33,22 +34,10 @@ module GitHooks
 
     def run_install(args)
       jira = nil
-      hooks = []
-      i = 0
-      while i < args.size
-        case args[i]
-        when '--jira'
-          jira = args[i + 1]
-          i += 2
-          next
-        when /^--/
-          i += 1
-          next
-        else
-          hooks << args[i]
-        end
-        i += 1
-      end
+      OptionParser.new do |opts|
+        opts.on('--jira PROJECT', 'Jira project key (e.g. APD)') { |v| jira = v }
+      end.parse!(args)
+      hooks = args
 
       installer = Installer.new(jira_project: jira)
       installed = installer.install(*hooks)

@@ -4,7 +4,7 @@
 #
 # Git commit-msg hook: if branch name contains a Jira ticket (e.g. APD-1234),
 # prepends "[APD-1234] " to commit messages unless already present.
-# JIRA_PROJECT_KEY is replaced at install time by git_hooks.
+# JIRA_PROJECT_KEY is replaced at install time by git_hooks; for manual install, replace it with your project key.
 
 # Git runs hooks with CWD = repo root; find .git from here
 repo_root = Dir.pwd

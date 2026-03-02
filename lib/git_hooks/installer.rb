@@ -50,9 +50,8 @@ module GitHooks
 
     def disable(*hook_names)
       path = disabled_file_path
-      current = disabled_hooks
-      hook_names.each { |name| current << name unless current.include?(name) }
-      File.write(path, "#{current.uniq.join("\n")}\n")
+      current = (disabled_hooks + hook_names).uniq
+      File.write(path, "#{current.join("\n")}\n")
       hook_names
     end
 
