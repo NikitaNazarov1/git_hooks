@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    git_hooks (0.3.0)
+    rails_git_hooks (0.3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -67,7 +67,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  git_hooks!
+  rails_git_hooks!
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.0)

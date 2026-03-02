@@ -7,7 +7,7 @@ require 'tmpdir'
 RSpec.describe GitHooks::Installer do
   around do |example|
     project_root = File.expand_path('../..', __dir__)
-    Dir.mktmpdir('git_hooks_spec', project_root) do |tmpdir|
+    Dir.mktmpdir('rails_git_hooks_spec', project_root) do |tmpdir|
       @tmpdir = tmpdir
       # Use a fake "git" dir (no .git in path to avoid sandbox restrictions)
       @git_dir = File.join(tmpdir, 'repo_git')

@@ -1,8 +1,8 @@
 # Git Hooks
 
-[![Gem Version](https://badge.fury.io/rb/git_hooks.svg)](https://badge.fury.io/rb/git_hooks)
-[![Build Status](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
-[![RuboCop](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/rubocop.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/rubocop.yml?query=branch%3Amain)
+[![Gem Version](https://badge.fury.io/rb/rails_git_hooks.svg)](https://badge.fury.io/rb/rails_git_hooks)
+[![Build Status](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
+[![RuboCop](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml?query=branch%3Amain)
 
 > Automate Jira ticket prefixes and RuboCop checks with git hooks. Built for Rails and Ruby projects.
 
@@ -24,29 +24,29 @@ Hooks can be disabled temporarily (e.g. for quick WIP commits or CI) without uni
 **1. Install the gem**
 
 ```bash
-gem install git_hooks
+gem install rails_git_hooks
 ```
 
 Or with Bundler — add to your `Gemfile`:
 
 ```ruby
-gem "git_hooks"
+gem "rails_git_hooks"
 ```
 
 Then:
 
 ```bash
 bundle install
-bundle exec git_hooks install
+bundle exec rails_git_hooks install
 ```
 
 **2. (Optional) Set your Jira project key**
 
 ```bash
-git_hooks install --jira MYPROJ
+rails_git_hooks install --jira MYPROJ
 # or
 export GIT_HOOKS_JIRA_PROJECT=MYPROJ
-git_hooks install
+rails_git_hooks install
 ```
 
 Default is `APD` if not set.
@@ -61,32 +61,32 @@ Run from your project root (inside a git repo).
 
 | Command | Description |
 |---------|-------------|
-| `git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install all. |
-| `git_hooks list` | List available hook names. |
-| `git_hooks disable HOOK [HOOK...]` | Disable hooks (use `*` for all). |
-| `git_hooks enable HOOK [HOOK...]` | Re-enable disabled hooks. |
-| `git_hooks disabled` | Show which hooks are currently disabled. |
+| `rails_git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install all. |
+| `rails_git_hooks list` | List available hook names. |
+| `rails_git_hooks disable HOOK [HOOK...]` | Disable hooks (use `*` for all). |
+| `rails_git_hooks enable HOOK [HOOK...]` | Re-enable disabled hooks. |
+| `rails_git_hooks disabled` | Show which hooks are currently disabled. |
 
 **Examples**
 
 ```bash
 # Install everything with custom Jira key
-git_hooks install --jira MYPROJ
+rails_git_hooks install --jira MYPROJ
 
 # Install only specific hooks
-git_hooks install pre-commit commit-msg --jira APD
+rails_git_hooks install pre-commit commit-msg --jira APD
 
 # Temporarily disable pre-commit (e.g. for a quick fix)
-git_hooks disable pre-commit
+rails_git_hooks disable pre-commit
 
 # Disable all hooks
-git_hooks disable *
+rails_git_hooks disable *
 
 # Turn them back on
-git_hooks enable pre-commit
+rails_git_hooks enable pre-commit
 ```
 
-Disabled state is stored in `.git/git_hooks_disabled` and persists until you run `enable`.
+Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until you run `enable`.
 
 ---
 
@@ -141,13 +141,3 @@ bundle exec rake sync_hooks   # copy templates to hooks/
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
----
-
-### Badge setup
-
-- **Gem Version** — Works after you push the gem to [RubyGems](https://rubygems.org).
-- **Build Status** — Uses [GitHub Actions](.github/workflows/tests.yml); runs on push/PR to `main` or `master`.
-- **Coverage** — Add the repo at [coveralls.io](https://coveralls.io), then run specs with coverage and push.
-- **Maintainability** — Add the repo at [codeclimate.com](https://codeclimate.com); replace the badge above with the one they provide.
-- **Inline docs** — [Inch CI](https://inch-ci.org) will pick up the repo; enable for `main` if needed.
