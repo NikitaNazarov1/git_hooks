@@ -1,109 +1,128 @@
 # Git Hooks
 
-Git hooks for Rails projects: Auto Jira ticket prefix in commit messages and RuboCop on staged files.
+[![Gem Version](https://badge.fury.io/rb/git_hooks.svg)](https://badge.fury.io/rb/git_hooks)
+[![Build Status](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
+[![Coverage Status](https://coveralls.io/repos/github/NikitaNazarov1/git_hooks/badge.svg?branch=main)](https://coveralls.io/github/NikitaNazarov1/git_hooks?branch=main)
 
-## Installation (as a gem)
+> Automate Jira ticket prefixes and RuboCop checks with git hooks. Built for Rails and Ruby projects.
+
+---
+
+## What you get
+
+| Hook | What it does |
+|------|--------------|
+| **commit-msg** | Prepends `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
+| **pre-commit** | Blocks commits to `master`/`main` and runs RuboCop on staged `.rb` files. |
+
+Hooks can be disabled temporarily (e.g. for quick WIP commits or CI) without uninstalling.
+
+---
+
+## Quick start
+
+**1. Install the gem**
 
 ```bash
 gem install git_hooks
 ```
 
-Or add to your Gemfile:
+Or with Bundler — add to your `Gemfile`:
 
 ```ruby
 gem "git_hooks"
 ```
 
-Then run:
+Then:
 
 ```bash
+bundle install
 bundle exec git_hooks install
 ```
 
-### Note that pre-commit hook disabled by default, to enable this hook you need to run `chmod +x .git/hooks/pre-commit` in your repo!
-
-### Install hooks in your repo
-
-From your project root (must be inside a git repo):
+**2. (Optional) Set your Jira project key**
 
 ```bash
-# Install all hooks (commit-msg + pre-commit)
-git_hooks install
-
-# Install with a custom Jira project key (default is APD)
 git_hooks install --jira MYPROJ
-
-# Install only specific hooks
-git_hooks install commit-msg
-git_hooks install pre-commit commit-msg --jira JIRA
-```
-
-You can also set the Jira project key via environment variable:
-
-```bash
+# or
 export GIT_HOOKS_JIRA_PROJECT=MYPROJ
 git_hooks install
 ```
 
-List available hooks:
+Default is `APD` if not set.
+
+> **Tip:** If the pre-commit hook doesn’t run, make it executable: `chmod +x .git/hooks/pre-commit`
+
+---
+
+## Commands
+
+Run from your project root (inside a git repo).
+
+| Command | Description |
+|---------|-------------|
+| `git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install all. |
+| `git_hooks list` | List available hook names. |
+| `git_hooks disable HOOK [HOOK...]` | Disable hooks (use `*` for all). |
+| `git_hooks enable HOOK [HOOK...]` | Re-enable disabled hooks. |
+| `git_hooks disabled` | Show which hooks are currently disabled. |
+
+**Examples**
 
 ```bash
-git_hooks list
-```
+# Install everything with custom Jira key
+git_hooks install --jira MYPROJ
 
-### Disable and enable hooks
+# Install only specific hooks
+git_hooks install pre-commit commit-msg --jira APD
 
-Hooks stay installed but skip running when disabled (useful for quick commits or CI):
-
-```bash
-# Disable one or more hooks
+# Temporarily disable pre-commit (e.g. for a quick fix)
 git_hooks disable pre-commit
-git_hooks disable commit-msg pre-commit
 
 # Disable all hooks
 git_hooks disable *
 
-# Re-enable hooks
+# Turn them back on
 git_hooks enable pre-commit
-git_hooks enable commit-msg pre-commit
-
-# See which hooks are disabled
-git_hooks disabled
 ```
 
-Disabled state is stored in `.git/git_hooks_disabled`.
+Disabled state is stored in `.git/git_hooks_disabled` and persists until you run `enable`.
 
 ---
 
-## Hooks
+## Hooks in detail
 
 ### commit-msg — Jira ticket prefix
 
-If your branch name contains a Jira ticket (e.g. `task/APD-1234/description`), the hook adds `[APD-1234] ` to the commit message unless it’s already there.
+If your branch name contains a Jira ticket (e.g. `task/APD-1234/fix-bug`), the hook prepends `[APD-1234] ` to the commit message unless it’s already there.
 
 **Example**
 
 - Branch: `task/APD-1234/fix-bug`
-- `git commit -m 'fix bug'`
-- Result: `[APD-1234] fix bug`
+- You run: `git commit -m 'fix bug'`
+- Result: **`[APD-1234] fix bug`**
 
-Configure the Jira project key when installing (e.g. `--jira APD` or `GIT_HOOKS_JIRA_PROJECT=APD`).
+Set the Jira project key at install time with `--jira PROJECT` or `GIT_HOOKS_JIRA_PROJECT`.
 
-### pre-commit — Protect default branch + RuboCop
+---
+
+### pre-commit — Default branch protection + RuboCop
 
 1. **Blocks commits on `master` / `main`** — You must commit from a feature branch; direct commits to the default branch are rejected.
 2. **Runs RuboCop** on staged `.rb` files. If there are offenses, the commit is aborted.
 
-**Note:** The pre-commit hook is installed executable. If it doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-commit`.
+Requires the `rubocop` gem in your project. If the hook doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-commit`.
 
 ---
 
 ## Manual installation (without the gem)
 
-Copy the hook scripts from `hooks/` into `.git/hooks`. The files in `hooks/` are kept in sync with the canonical templates via `rake sync_hooks`:
+If you don’t want to use the gem, copy the scripts from `hooks/` into `.git/hooks`. The `hooks/` directory is synced from the gem templates via `rake sync_hooks` in development.
 
-- [commit-msg](hooks/commit-msg) — replace `JIRA_PROJECT_KEY` in the script with your Jira project key (e.g. `APD`).
-- [pre-commit](hooks/pre-commit) — requires the `rubocop` gem.
+| File | Notes |
+|------|--------|
+| [commit-msg](hooks/commit-msg) | Replace `JIRA_PROJECT_KEY` in the script with your Jira project key (e.g. `APD`). |
+| [pre-commit](hooks/pre-commit) | Requires the `rubocop` gem in the repo where you use it. |
 
 ---
 
@@ -114,9 +133,21 @@ bundle install
 bundle exec rake              # run specs (default task)
 bundle exec rake build        # build the gem
 bundle exec rake install      # install the gem locally
-bundle exec rake sync_hooks   # copy lib/git_hooks/templates to hooks/
+bundle exec rake sync_hooks   # copy templates to hooks/
 ```
+
+---
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+---
+
+### Badge setup
+
+- **Gem Version** — Works after you push the gem to [RubyGems](https://rubygems.org).
+- **Build Status** — Uses [GitHub Actions](.github/workflows/tests.yml); runs on push/PR to `main` or `master`.
+- **Coverage** — Add the repo at [coveralls.io](https://coveralls.io), then run specs with coverage and push.
+- **Maintainability** — Add the repo at [codeclimate.com](https://codeclimate.com); replace the badge above with the one they provide.
+- **Inline docs** — [Inch CI](https://inch-ci.org) will pick up the repo; enable for `main` if needed.
