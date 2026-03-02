@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'git_hooks'
   spec.version       = GitHooks::VERSION
   spec.authors       = ['Nikita Nazarov']
-  spec.email         = ['']
+  spec.email         = ['nikenor11@gmail.com']
 
   spec.summary       = 'Git hooks for Jira commit prefix and RuboCop on staged files'
   spec.description   = 'Installs commit-msg (Jira ticket prefix) and pre-commit (RuboCop) hooks into your git repository.'
@@ -15,8 +15,10 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.6.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = 'https://github.com/NikitaNazarov1/git_hooks'
+  spec.metadata['changelog_uri'] = 'https://github.com/NikitaNazarov1/git_hooks/blob/main/CHANGELOG.md'
 
-  spec.files = Dir['lib/**/*', 'bin/*'] + %w[README.md LICENSE]
+  spec.files = Dir['lib/**/*', 'bin/*'] + %w[README.md LICENSE CHANGELOG.md]
   spec.bindir        = 'bin'
   spec.executables   = ['git_hooks']
   spec.require_paths = ['lib']
