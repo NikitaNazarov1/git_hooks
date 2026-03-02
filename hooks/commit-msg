@@ -1,19 +1,20 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 #
 # Git commit-msg hook, works with jira tickets. If your branch name contains a reference to jira ticket, then
 # script automatically adds "[XXX-1234] " to commit messages, unless they mention "XXX-1234" already.
-
 
 branch_name = `git branch --no-color 2> /dev/null`[/^\* (.+)/, 1].to_s
 original_commit_message = File.read(ARGV[0]).strip
 
 pattern = /(APD-\d+)/i # APD - jira project name, please replace it by yours
 
-if m = branch_name.match(pattern)
+if (m = branch_name.match(pattern))
   jira_number = m.captures.first
 
   exit if original_commit_message.include?(jira_number)
 
   message = "[#{jira_number}] #{original_commit_message}"
-  File.open(ARGV[0], 'w') {|f| f.write message }
+  File.open(ARGV[0], 'w') { |f| f.write message }
 end
