@@ -14,6 +14,13 @@ if File.exist?(disabled_file)
   exit 0 if disabled.include?('*') || disabled.include?('pre-commit')
 end
 
+# Prevent commits on default branch (master/main)
+branch = `git rev-parse --abbrev-ref HEAD`.strip
+if %w[master main].include?(branch)
+  warn "Commits on '#{branch}' are not allowed. Create a feature branch."
+  exit 1
+end
+
 require 'english'
 require 'rubocop'
 
