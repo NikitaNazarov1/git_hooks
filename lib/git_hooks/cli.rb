@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "git_hooks"
+require 'git_hooks'
 
 module GitHooks
   class CLI
@@ -10,20 +10,20 @@ module GitHooks
 
     def run(argv)
       case argv[0]
-      when "install"
+      when 'install'
         run_install(argv[1..])
-      when "list"
+      when 'list'
         run_list
-      when "disable"
+      when 'disable'
         run_disable(argv[1..])
-      when "enable"
+      when 'enable'
         run_enable(argv[1..])
-      when "disabled"
+      when 'disabled'
         run_disabled
-      when nil, "-h", "--help"
+      when nil, '-h', '--help'
         print_help
       else
-        $stderr.puts "Unknown command: #{argv[0]}"
+        warn "Unknown command: #{argv[0]}"
         print_help
         exit 1
       end
@@ -37,7 +37,7 @@ module GitHooks
       i = 0
       while i < args.size
         case args[i]
-        when "--jira"
+        when '--jira'
           jira = args[i + 1]
           i += 2
           next
@@ -52,44 +52,44 @@ module GitHooks
 
       installer = Installer.new(jira_project: jira)
       installed = installer.install(*hooks)
-      puts "Installed hooks: #{installed.join(", ")}"
+      puts "Installed hooks: #{installed.join(', ')}"
     rescue GitHooks::Error => e
-      $stderr.puts "Error: #{e.message}"
+      warn "Error: #{e.message}"
       exit 1
     end
 
     def run_list
       dir = GitHooks::Installer::HOOKS_DIR
       hooks = Dir.children(dir).select { |f| File.file?(File.join(dir, f)) }
-      puts "Available hooks: #{hooks.join(", ")}"
+      puts "Available hooks: #{hooks.join(', ')}"
     end
 
     def run_disable(args)
-      hooks = args.reject { |a| a.start_with?("-") }
+      hooks = args.reject { |a| a.start_with?('-') }
       if hooks.empty?
-        $stderr.puts "Usage: git_hooks disable HOOK [HOOK...]"
-        $stderr.puts "Use '*' to disable all hooks."
+        warn 'Usage: git_hooks disable HOOK [HOOK...]'
+        warn "Use '*' to disable all hooks."
         exit 1
       end
       installer = Installer.new
       installer.disable(*hooks)
-      puts "Disabled: #{hooks.join(", ")}"
+      puts "Disabled: #{hooks.join(', ')}"
     rescue GitHooks::Error => e
-      $stderr.puts "Error: #{e.message}"
+      warn "Error: #{e.message}"
       exit 1
     end
 
     def run_enable(args)
-      hooks = args.reject { |a| a.start_with?("-") }
+      hooks = args.reject { |a| a.start_with?('-') }
       if hooks.empty?
-        $stderr.puts "Usage: git_hooks enable HOOK [HOOK...]"
+        warn 'Usage: git_hooks enable HOOK [HOOK...]'
         exit 1
       end
       installer = Installer.new
       installer.enable(*hooks)
-      puts "Enabled: #{hooks.join(", ")}"
+      puts "Enabled: #{hooks.join(', ')}"
     rescue GitHooks::Error => e
-      $stderr.puts "Error: #{e.message}"
+      warn "Error: #{e.message}"
       exit 1
     end
 
@@ -97,12 +97,12 @@ module GitHooks
       installer = Installer.new
       list = installer.disabled_hooks
       if list.empty?
-        puts "No hooks disabled."
+        puts 'No hooks disabled.'
       else
-        puts "Disabled hooks: #{list.join(", ")}"
+        puts "Disabled hooks: #{list.join(', ')}"
       end
     rescue GitHooks::Error => e
-      $stderr.puts "Error: #{e.message}"
+      warn "Error: #{e.message}"
       exit 1
     end
 
