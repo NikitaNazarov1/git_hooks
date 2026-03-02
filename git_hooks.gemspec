@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Nikita Nazarov']
   spec.email         = ['nikenor11@gmail.com']
 
-  spec.summary       = 'Git hooks for Jira commit prefix and RuboCop on staged files'
+  spec.summary       = 'Most useful git hooks for Rails and Ruby projects'
   spec.description   = 'Installs commit-msg (Jira ticket prefix) and pre-commit (RuboCop) hooks into your git repository.'
   spec.homepage      = 'https://github.com/NikitaNazarov1/rails_git_hooks'
   spec.license       = 'MIT'
