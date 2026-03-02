@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'git_hooks'
+require 'rails_git_hooks'
 require 'optparse'
 
 module GitHooks
@@ -56,7 +56,7 @@ module GitHooks
     def run_disable(args)
       hooks = args.reject { |a| a.start_with?('-') }
       if hooks.empty?
-        warn 'Usage: git_hooks disable HOOK [HOOK...]'
+        warn 'Usage: rails_git_hooks disable HOOK [HOOK...]'
         warn "Use '*' to disable all hooks."
         exit 1
       end
@@ -71,7 +71,7 @@ module GitHooks
     def run_enable(args)
       hooks = args.reject { |a| a.start_with?('-') }
       if hooks.empty?
-        warn 'Usage: git_hooks enable HOOK [HOOK...]'
+        warn 'Usage: rails_git_hooks enable HOOK [HOOK...]'
         exit 1
       end
       installer = Installer.new
@@ -97,15 +97,15 @@ module GitHooks
 
     def print_help
       puts <<~HELP
-        git_hooks - Install git hooks for Jira commit prefix and RuboCop
+        rails_git_hooks - Install git hooks for Jira commit prefix and RuboCop
 
         Usage:
-          git_hooks install [HOOK...] [--jira PROJECT_KEY]
-          git_hooks disable HOOK [HOOK...]   (use * for all)
-          git_hooks enable HOOK [HOOK...]
-          git_hooks disabled
-          git_hooks list
-          git_hooks --help
+          rails_git_hooks install [HOOK...] [--jira PROJECT_KEY]
+          rails_git_hooks disable HOOK [HOOK...]   (use * for all)
+          rails_git_hooks enable HOOK [HOOK...]
+          rails_git_hooks disabled
+          rails_git_hooks list
+          rails_git_hooks --help
 
         Commands:
           install    Install hooks into current repo's .git/hooks.
@@ -115,11 +115,11 @@ module GitHooks
           list       List available hook names.
 
         Examples:
-          git_hooks install
-          git_hooks disable pre-commit
-          git_hooks disable *              # disable all
-          git_hooks enable pre-commit
-          git_hooks install commit-msg pre-commit --jira MYPROJ
+          rails_git_hooks install
+          rails_git_hooks disable pre-commit
+          rails_git_hooks disable *              # disable all
+          rails_git_hooks enable pre-commit
+          rails_git_hooks install commit-msg pre-commit --jira MYPROJ
       HELP
     end
   end

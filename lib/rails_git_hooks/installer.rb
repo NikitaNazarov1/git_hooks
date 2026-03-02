@@ -35,7 +35,7 @@ module GitHooks
       Dir.children(HOOKS_DIR).select { |f| File.file?(File.join(HOOKS_DIR, f)) }
     end
 
-    DISABLED_FILE = 'git_hooks_disabled'
+    DISABLED_FILE = 'rails_git_hooks_disabled'
 
     def disabled_file_path
       File.join(@git_dir, DISABLED_FILE)

@@ -9,7 +9,7 @@ RSpec.describe GitHooks::CLI do
 
   describe 'help' do
     it 'prints help for --help' do
-      expect { run_cli(['--help']) }.to output(/git_hooks - Install git hooks/).to_stdout
+      expect { run_cli(['--help']) }.to output(/rails_git_hooks - Install git hooks/).to_stdout
     end
 
     it 'prints help for -h' do

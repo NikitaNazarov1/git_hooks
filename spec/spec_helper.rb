@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'git_hooks'
-require 'git_hooks/cli'
+require 'rails_git_hooks'
+require 'rails_git_hooks/cli'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

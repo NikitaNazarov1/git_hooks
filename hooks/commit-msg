@@ -4,13 +4,13 @@
 #
 # Git commit-msg hook: if branch name contains a Jira ticket (e.g. APD-1234),
 # prepends "[APD-1234] " to commit messages unless already present.
-# JIRA_PROJECT_KEY is replaced at install time by git_hooks; for manual install, replace it with your project key.
+# JIRA_PROJECT_KEY is replaced at install time by rails_git_hooks; for manual install, replace it with your project key.
 
 # Git runs hooks with CWD = repo root; find .git from here
 repo_root = Dir.pwd
 git_dir = File.join(repo_root, '.git')
 git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
-disabled_file = File.join(git_dir, 'git_hooks_disabled')
+disabled_file = File.join(git_dir, 'rails_git_hooks_disabled')
 if File.exist?(disabled_file)
   disabled = File.read(disabled_file).split("\n").map(&:strip)
   exit 0 if disabled.include?('*') || disabled.include?('commit-msg')

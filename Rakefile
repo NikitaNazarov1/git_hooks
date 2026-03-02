@@ -17,9 +17,9 @@ rescue LoadError
   # RuboCop not available
 end
 
-desc 'Sync hook templates from lib/git_hooks/templates to hooks/ (for manual install)'
+desc 'Sync hook templates from lib/rails_git_hooks/templates to hooks/ (for manual install)'
 task :sync_hooks do
-  templates_dir = File.expand_path('lib/git_hooks/templates', __dir__)
+  templates_dir = File.expand_path('lib/rails_git_hooks/templates', __dir__)
   hooks_dir = File.expand_path('hooks', __dir__)
   Dir.each_child(templates_dir) do |name|
     next unless File.file?(File.join(templates_dir, name))
