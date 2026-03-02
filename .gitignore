@@ -1,1 +1,4 @@
 *.gem
+/spec/tmp
+/spec/examples.txt
+git_hooks_spec*

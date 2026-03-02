@@ -100,10 +100,10 @@ Configure the Jira project key when installing (e.g. `--jira APD` or `GIT_HOOKS_
 
 ## Manual installation (without the gem)
 
-See the hook source and copy the scripts into `.git/hooks`:
+Copy the hook scripts from `hooks/` into `.git/hooks`. The files in `hooks/` are kept in sync with the canonical templates via `rake sync_hooks`:
 
-- [commit-msg](hooks/commit-msg) — replace the Jira project key in the script (e.g. `APD`) with yours.
-- [pre-commit](hooks/pre-commit) — requires `rubocop` gem.
+- [commit-msg](hooks/commit-msg) — replace `JIRA_PROJECT_KEY` in the script with your Jira project key (e.g. `APD`).
+- [pre-commit](hooks/pre-commit) — requires the `rubocop` gem.
 
 ---
 
@@ -111,8 +111,10 @@ See the hook source and copy the scripts into `.git/hooks`:
 
 ```bash
 bundle install
-bundle exec rake build   # build the gem
-bundle exec rake install # install the gem locally
+bundle exec rake              # run specs (default task)
+bundle exec rake build        # build the gem
+bundle exec rake install      # install the gem locally
+bundle exec rake sync_hooks   # copy lib/git_hooks/templates to hooks/
 ```
 
 ## License

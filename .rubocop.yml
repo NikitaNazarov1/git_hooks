@@ -28,6 +28,11 @@ Gemspec/RequireMFA:
 Gemspec/DevelopmentDependencies:
   Enabled: false
 
+# Specs often have long describe blocks
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
 # Hooks and templates are small scripts; avoid style churn
 Style/FileWrite:
   Enabled: false

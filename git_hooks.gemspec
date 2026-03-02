@@ -21,5 +21,6 @@ Gem::Specification.new do |spec|
   spec.executables   = ['git_hooks']
   spec.require_paths = ['lib']
 
+  spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 1.0'
 end
