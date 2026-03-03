@@ -33,10 +33,11 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*_spec.rb'
 
-# Templates are copied to .git/hooks and made executable at install time
+# Templates and hooks/ are copied to .git/hooks and made executable at install/sync time
 Lint/ScriptPermission:
   Exclude:
     - 'lib/rails_git_hooks/templates/*'
+    - 'hooks/*'
 
 # Hooks and templates are small scripts; avoid style churn
 Style/FileWrite:
