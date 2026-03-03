@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['nikenor11@gmail.com']
 
   spec.summary       = 'Most useful git hooks for Rails and Ruby projects'
-  spec.description   = 'Installs commit-msg (Jira ticket prefix) and pre-commit (RuboCop) hooks into your git repository.'
+  spec.description   = 'Installs most useful git hooks for Rails and Ruby projects'
   spec.homepage      = 'https://github.com/NikitaNazarov1/rails_git_hooks'
   spec.license       = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'
