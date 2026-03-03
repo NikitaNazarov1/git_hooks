@@ -14,6 +14,7 @@
 |------|--------------|
 | **commit-msg** | Prepends `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
 | **pre-commit** | Blocks commits to `master`/`main` and runs RuboCop on staged `.rb` files. |
+| **pre-push** | Runs the full test suite (`bundle exec rspec`) before push; aborts push if tests fail. |
 
 Hooks can be disabled temporarily (e.g. for quick WIP commits or CI) without uninstalling.
 
@@ -115,6 +116,14 @@ Requires the `rubocop` gem in your project. If the hook doesn’t run, ensure it
 
 ---
 
+### pre-push — Run tests before push
+
+Runs `bundle exec rspec` before every `git push`. If the test suite fails, the push is aborted so you don’t break CI.
+
+Requires the `rspec` gem (or for Minitest, edit the hook to use `bundle exec rake test`). If the hook doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-push`.
+
+---
+
 ## Manual installation (without the gem)
 
 If you don’t want to use the gem, copy the scripts from `hooks/` into `.git/hooks`. The `hooks/` directory is synced from the gem templates via `rake sync_hooks` in development.
@@ -123,6 +132,7 @@ If you don’t want to use the gem, copy the scripts from `hooks/` into `.git/ho
 |------|--------|
 | [commit-msg](hooks/commit-msg) | Replace `JIRA_PROJECT_KEY` in the script with your Jira project key (e.g. `APD`). |
 | [pre-commit](hooks/pre-commit) | Requires the `rubocop` gem in the repo where you use it. |
+| [pre-push](hooks/pre-push) | Runs `bundle exec rspec`; edit to use `bundle exec rake test` for Minitest. |
 
 ---
 

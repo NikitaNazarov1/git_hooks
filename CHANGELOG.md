@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- **pre-push** hook: runs `bundle exec rspec` before every push; aborts push if tests fail. Respects `rails_git_hooks_disabled`.
+
 ## [0.4.1] - (latest)
 
 ### Changed
