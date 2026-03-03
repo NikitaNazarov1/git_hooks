@@ -23,16 +23,20 @@ RSpec.describe GitHooks::CLI do
 
   describe 'list' do
     it 'prints available hook names' do
-      expect { run_cli(['list']) }.to output(/Available hooks:.*(?:commit-msg.*pre-commit|pre-commit.*commit-msg)/).to_stdout
+      expect do
+        run_cli(['list'])
+      end.to output(a_string_including('Available hooks:')
+         .and(including('commit-msg')).and(including('pre-commit'))
+         .and(including('pre-push'))).to_stdout
     end
   end
 
   describe 'install' do
     it 'outputs installed hooks and passes hook names to Installer' do
-      installer = instance_double(GitHooks::Installer, install: %w[pre-commit commit-msg])
+      installer = instance_double(GitHooks::Installer, install: %w[commit-msg pre-commit pre-push])
       allow(GitHooks::Installer).to receive(:new).with(jira_project: nil).and_return(installer)
 
-      expect { run_cli(['install']) }.to output("Installed hooks: pre-commit, commit-msg\n").to_stdout
+      expect { run_cli(['install']) }.to output(a_string_including('Installed hooks:').and(including('pre-push'))).to_stdout
       expect(installer).to have_received(:install).with(no_args)
     end
 

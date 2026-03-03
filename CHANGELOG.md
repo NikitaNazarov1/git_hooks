@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.4.1] - (latest)
+## [Unreleased]
+
+## [0.5.0] (latest)
+
+### Added
+
+- **pre-push** hook: runs `bundle exec rspec` before every push; aborts push if tests fail. Respects `rails_git_hooks_disabled`.
+- RuboCop `Lint/ScriptPermission` exclusion for `hooks/*` (same as templates).
+
+## [0.4.1]
 
 ### Changed
 

@@ -21,16 +21,17 @@ RSpec.describe GitHooks::Installer do
 
   describe '#available_hooks' do
     it 'returns hook names from templates directory' do
-      expect(installer.available_hooks).to contain_exactly('commit-msg', 'pre-commit')
+      expect(installer.available_hooks).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
     end
   end
 
   describe '#install' do
     it 'installs all hooks when no names given' do
       installed = installer.install
-      expect(installed).to contain_exactly('commit-msg', 'pre-commit')
+      expect(installed).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
       expect(File).to be_executable(File.join(@hooks_dir, 'pre-commit'))
       expect(File).to be_executable(File.join(@hooks_dir, 'commit-msg'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'pre-push'))
     end
 
     it 'installs only requested hooks' do

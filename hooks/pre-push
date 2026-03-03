@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Runs the full test suite before push. Push is aborted if tests fail.
+# Uses `bundle exec rspec`. For Minitest, edit to use `bundle exec rake test`.
+
+# Git runs hooks with CWD = repo root; find .git from here
+repo_root = Dir.pwd
+git_dir = File.join(repo_root, '.git')
+git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
+disabled_file = File.join(git_dir, 'rails_git_hooks_disabled')
+if File.exist?(disabled_file)
+  disabled = File.read(disabled_file).split("\n").map(&:strip)
+  exit 0 if disabled.include?('*') || disabled.include?('pre-push')
+end
+
+require 'english'
+
+system('bundle exec rspec')
+exit $CHILD_STATUS.to_s[-1].to_i
