@@ -23,7 +23,11 @@ RSpec.describe GitHooks::CLI do
 
   describe 'list' do
     it 'prints available hook names' do
-      expect { run_cli(['list']) }.to output(a_string_including('Available hooks:').and(including('commit-msg')).and(including('pre-commit')).and(including('pre-push'))).to_stdout
+      expect do
+        run_cli(['list'])
+      end.to output(a_string_including('Available hooks:')
+         .and(including('commit-msg')).and(including('pre-commit'))
+         .and(including('pre-push'))).to_stdout
     end
   end
 
