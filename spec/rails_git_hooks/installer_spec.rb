@@ -119,6 +119,29 @@ RSpec.describe GitHooks::Installer do
     end
   end
 
+  describe 'whitespace check feature' do
+    it 'whitespace_check_enabled? is false when file does not exist' do
+      expect(installer.whitespace_check_enabled?).to eq(false)
+    end
+
+    it 'enable_whitespace_check creates the flag file' do
+      installer.enable_whitespace_check
+      expect(installer.whitespace_check_enabled?).to eq(true)
+      expect(File).to exist(File.join(@git_dir, GitHooks::Installer::WHITESPACE_CHECK_FILE))
+    end
+
+    it 'disable_whitespace_check removes the flag file' do
+      installer.enable_whitespace_check
+      installer.disable_whitespace_check
+      expect(installer.whitespace_check_enabled?).to eq(false)
+      expect(File).not_to exist(File.join(@git_dir, GitHooks::Installer::WHITESPACE_CHECK_FILE))
+    end
+
+    it 'disable_whitespace_check is a no-op when file does not exist' do
+      expect { installer.disable_whitespace_check }.not_to raise_error
+    end
+  end
+
   describe 'find_git_dir (when git_dir not provided)' do
     it 'raises when not inside a git repository' do
       allow_any_instance_of(described_class).to receive(:find_git_dir).and_raise(

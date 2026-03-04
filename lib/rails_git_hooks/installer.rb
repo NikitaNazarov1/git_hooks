@@ -68,6 +68,22 @@ module GitHooks
       hook_names
     end
 
+    WHITESPACE_CHECK_FILE = 'rails_git_hooks_whitespace_check'
+
+    def enable_whitespace_check
+      path = File.join(@git_dir, WHITESPACE_CHECK_FILE)
+      File.write(path, '')
+    end
+
+    def disable_whitespace_check
+      path = File.join(@git_dir, WHITESPACE_CHECK_FILE)
+      FileUtils.rm_f(path)
+    end
+
+    def whitespace_check_enabled?
+      File.exist?(File.join(@git_dir, WHITESPACE_CHECK_FILE))
+    end
+
     private
 
     def find_git_dir

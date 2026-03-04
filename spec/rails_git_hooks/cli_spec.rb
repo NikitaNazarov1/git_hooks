@@ -108,6 +108,28 @@ RSpec.describe GitHooks::CLI do
     end
   end
 
+  describe 'enable whitespace-check' do
+    it 'enables whitespace-check and prints confirmation' do
+      installer = instance_double(GitHooks::Installer, enable: [])
+      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+      allow(installer).to receive(:enable_whitespace_check)
+
+      expect { run_cli(%w[enable whitespace-check]) }.to output("Enabled: whitespace-check\n").to_stdout
+      expect(installer).to have_received(:enable_whitespace_check)
+    end
+  end
+
+  describe 'disable whitespace-check' do
+    it 'disables whitespace-check and prints confirmation' do
+      installer = instance_double(GitHooks::Installer, disable: [])
+      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+      allow(installer).to receive(:disable_whitespace_check)
+
+      expect { run_cli(%w[disable whitespace-check]) }.to output("Disabled: whitespace-check\n").to_stdout
+      expect(installer).to have_received(:disable_whitespace_check)
+    end
+  end
+
   describe 'unknown command' do
     it 'warns and exits with 1' do
       expect { run_cli(['unknown']) }.to raise_error(SystemExit) do |e|

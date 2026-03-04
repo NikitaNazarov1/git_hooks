@@ -64,8 +64,8 @@ Run from your project root (inside a git repo).
 |---------|-------------|
 | `rails_git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install all. |
 | `rails_git_hooks list` | List available hook names. |
-| `rails_git_hooks disable HOOK [HOOK...]` | Disable hooks (use `*` for all). |
-| `rails_git_hooks enable HOOK [HOOK...]` | Re-enable disabled hooks. |
+| `rails_git_hooks disable HOOK [HOOK...] [whitespace-check]` | Disable hooks (use `*` for all) or the whitespace-check. |
+| `rails_git_hooks enable HOOK [HOOK...] [whitespace-check]` | Re-enable hooks or enable whitespace-check. |
 | `rails_git_hooks disabled` | Show which hooks are currently disabled. |
 
 **Examples**
@@ -85,6 +85,9 @@ rails_git_hooks disable *
 
 # Turn them back on
 rails_git_hooks enable pre-commit
+
+# Enable rejection of trailing whitespace and conflict markers in staged files (off by default)
+rails_git_hooks enable whitespace-check
 ```
 
 Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until you run `enable`.
@@ -111,6 +114,7 @@ Set the Jira project key at install time with `--jira PROJECT` or `GIT_HOOKS_JIR
 
 1. **Blocks commits on `master` / `main`** — You must commit from a feature branch; direct commits to the default branch are rejected.
 2. **Runs RuboCop** on staged `.rb` files. If there are offenses, the commit is aborted.
+3. **Trailing whitespace / conflict markers** (off by default) — When enabled, rejects commits that add trailing spaces/tabs or `<<<<<<<` / `=======` / `>>>>>>>` in staged files. Enable with: `rails_git_hooks enable whitespace-check`. Disable with: `rails_git_hooks disable whitespace-check`.
 
 Requires the `rubocop` gem in your project. If the hook doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-commit`.
 
