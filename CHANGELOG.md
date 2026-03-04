@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.6.0] (latest)
 
 ### Added
 
 - **Trailing whitespace / conflict markers** check in pre-commit (disabled by default): rejects commits that add trailing spaces/tabs or `<<<<<<<` / `=======` / `>>>>>>>` in staged files. Enable with `rails_git_hooks enable whitespace-check`; disable with `rails_git_hooks disable whitespace-check`.
 
-## [0.5.0] (latest)
+## [0.5.0]
 
 ### Added
 
