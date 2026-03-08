@@ -32,11 +32,11 @@ RSpec.describe GitHooks::CLI do
   end
 
   describe 'install' do
-    it 'outputs installed hooks and passes hook names to Installer' do
-      installer = instance_double(GitHooks::Installer, install: %w[commit-msg pre-commit pre-push])
+    it 'outputs installed hooks and passes no args to Installer (default: commit-msg + pre-commit)' do
+      installer = instance_double(GitHooks::Installer, install: %w[commit-msg pre-commit])
       allow(GitHooks::Installer).to receive(:new).with(jira_project: nil).and_return(installer)
 
-      expect { run_cli(['install']) }.to output(a_string_including('Installed hooks:').and(including('pre-push'))).to_stdout
+      expect { run_cli(['install']) }.to output("Installed hooks: commit-msg, pre-commit\n").to_stdout
       expect(installer).to have_received(:install).with(no_args)
     end
 

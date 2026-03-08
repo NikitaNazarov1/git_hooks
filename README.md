@@ -41,7 +41,11 @@ bundle install
 bundle exec rails_git_hooks install
 ```
 
-**2. (Optional) Set your Jira project key**
+This installs **commit-msg** (Jira ticket prefix) and **pre-commit** (blocks commits on `master`/`main` + RuboCop on staged `.rb` files) by default.
+
+**2. Set your Jira project key**
+
+Replace the default by passing your project key at install time or via env:
 
 ```bash
 rails_git_hooks install --jira MYPROJ
@@ -50,7 +54,10 @@ export GIT_HOOKS_JIRA_PROJECT=MYPROJ
 rails_git_hooks install
 ```
 
-Default is `APD` if not set.
+Default is `APD` if not set. For manual install: replace `JIRA_PROJECT_KEY` in the commit-msg script with your key (e.g. `APD`).
+
+To also run the full test suite before push:  
+`rails_git_hooks install pre-push`
 
 > **Tip:** If the pre-commit hook doesn’t run, make it executable: `chmod +x .git/hooks/pre-commit`
 
@@ -62,7 +69,7 @@ Run from your project root (inside a git repo).
 
 | Command | Description |
 |---------|-------------|
-| `rails_git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install all. |
+| `rails_git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install default (commit-msg + pre-commit). |
 | `rails_git_hooks list` | List available hook names. |
 | `rails_git_hooks disable HOOK [HOOK...] [whitespace-check]` | Disable hooks (use `*` for all) or the whitespace-check. |
 | `rails_git_hooks enable HOOK [HOOK...] [whitespace-check]` | Re-enable hooks or enable whitespace-check. |
