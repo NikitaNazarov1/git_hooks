@@ -42,7 +42,9 @@ staged.each do |path|
 end
 
 unless warnings.empty?
+  warn ''
   warn 'Warning (debugger check):'
   warnings.uniq.each { |e| warn "  #{e}" }
+  warn ''
 end
 # Does not exit 1 — commit is never blocked by this check

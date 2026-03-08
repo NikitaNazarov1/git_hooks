@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unrelised
+
+### Added
+
+- **Pre-commit YAML format check** — Warns (does not block) when any staged `.yml` or `.yaml` file fails to parse (invalid YAML). Reports file and line from the parser. On by default with pre-commit.
+
 ## [0.7.0] (latest)
 
 ### Changed

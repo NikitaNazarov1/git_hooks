@@ -18,8 +18,10 @@ if File.exist?(whitespace_check_file)
     end
   end
   unless errors.empty?
+    warn ''
     warn 'Commit rejected (whitespace/conflict check):'
     errors.uniq.each { |e| warn "  #{e}" }
+    warn ''
     exit 1
   end
 end
