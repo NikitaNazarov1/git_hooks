@@ -8,9 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- **Code-first runtime architecture** — Hook behavior now lives in Ruby classes with a central runner, registry, policy resolver, dependency checker, and sparse override config loader.
+- **Sparse override config** — Added optional `.rails_git_hooks.yml` with Overcommit-style per-check overrides for `enabled`, `quiet`, `on_fail`, `on_warn`, `on_missing_dependency`, `include`, `exclude`, and `command`.
+- **Thin hook bootstraps** — `templates/hooks/*` now dispatch into the embedded `rails_git_hooks` runtime instead of loading copied script files per check.
 - **Pre-commit YAML format check** — Warns (does not block) when any staged `.yml` or `.yaml` file fails to parse (invalid YAML). Reports file and line from the parser. On by default with pre-commit.
 - **Pre-commit JSON format check** — Warns (does not block) when any staged `.json` file fails to parse (invalid JSON). Reports file and parser message. On by default with pre-commit.
 - **Pre-commit migrations check** — Warns (does not block) when: (a) migration file(s) are staged but neither `db/schema.rb` nor `db/structure.sql` is staged; (b) data migration file(s) in `db/data/` or `db/data_migrate/` are staged but `db/data_schema.rb` is not. **On by default.** Disable with `rails_git_hooks disable migrations-check`.
+
+### Changed
+
+- **CLI redesign** — Replaced per-check flag-file commands with generic config-driven commands: `install`, `list`, `init`, `enable`, `disable`, `set`, and `show-config`.
+- **Manual install layout** — `hooks/` now syncs the hook bootstraps plus the embedded runtime directory instead of the old `templates/shared/` script tree.
+- **Dependency handling** — Checks can now declare executables, Ruby libraries, files, and install hints, with centralized `on_missing_dependency` policy handling.
 
 ## [0.7.0] (latest)
 

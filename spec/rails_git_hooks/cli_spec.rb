@@ -9,7 +9,7 @@ RSpec.describe GitHooks::CLI do
 
   describe 'help' do
     it 'prints help for --help' do
-      expect { run_cli(['--help']) }.to output(/rails_git_hooks - Install git hooks/).to_stdout
+      expect { run_cli(['--help']) }.to output(/rails_git_hooks - Install configurable Git hooks/).to_stdout
     end
 
     it 'prints help for -h' do
@@ -26,8 +26,9 @@ RSpec.describe GitHooks::CLI do
       expect do
         run_cli(['list'])
       end.to output(a_string_including('Available hooks:')
-         .and(including('commit-msg')).and(including('pre-commit'))
-         .and(including('pre-push'))).to_stdout
+         .and(including('commit-msg'))
+         .and(including('Available checks:'))
+         .and(including('rubocop-check'))).to_stdout
     end
   end
 
@@ -60,95 +61,92 @@ RSpec.describe GitHooks::CLI do
     end
   end
 
-  describe 'disable' do
-    it 'disables hooks and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, disable: ['pre-commit'])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+  describe 'init' do
+    it 'creates the override config file' do
+      repo = instance_double(GitHooks::Repository)
+      config = instance_double(GitHooks::OverrideConfig)
+      allow(GitHooks::Repository).to receive(:new).and_return(repo)
+      allow(GitHooks::OverrideConfig).to receive(:new).with(repo: repo).and_return(config)
+      allow(config).to receive(:init)
 
-      expect { run_cli(%w[disable pre-commit]) }.to output("Disabled: pre-commit\n").to_stdout
-      expect(installer).to have_received(:disable).with('pre-commit')
-    end
-
-    it 'exits with usage when no hooks given' do
-      expect { run_cli(['disable']) }.to raise_error(SystemExit) do |e|
-        expect(e.status).to eq(1)
-      end
+      expect { run_cli(['init']) }.to output(/Initialized \.rails_git_hooks\.yml/).to_stdout
+      expect(config).to have_received(:init)
     end
   end
 
   describe 'enable' do
-    it 'enables hooks and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, enable: ['pre-commit'])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+    it 'enables a check and prints confirmation' do
+      repo = instance_double(GitHooks::Repository)
+      config = instance_double(GitHooks::OverrideConfig)
+      definition = instance_double(GitHooks::CheckDefinition)
+      allow(GitHooks::Repository).to receive(:new).and_return(repo)
+      allow(GitHooks::OverrideConfig).to receive(:new).with(repo: repo).and_return(config)
+      allow(GitHooks::CheckRegistry).to receive(:find!).with('rubocop-check').and_return(definition)
+      allow(config).to receive(:set_option)
 
-      expect { run_cli(%w[enable pre-commit]) }.to output("Enabled: pre-commit\n").to_stdout
-      expect(installer).to have_received(:enable).with('pre-commit')
+      expect { run_cli(%w[enable rubocop-check]) }.to output("Enabled: rubocop-check\n").to_stdout
+      expect(config).to have_received(:set_option).with(definition, 'enabled', true)
     end
 
-    it 'exits with usage when no hooks given' do
+    it 'exits with usage when no check given' do
       expect { run_cli(['enable']) }.to raise_error(SystemExit) do |e|
         expect(e.status).to eq(1)
       end
     end
   end
 
-  describe 'disabled' do
-    it 'prints "No hooks disabled." when none disabled' do
-      installer = instance_double(GitHooks::Installer, disabled_hooks: [])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+  describe 'disable' do
+    it 'disables a check and prints confirmation' do
+      repo = instance_double(GitHooks::Repository)
+      config = instance_double(GitHooks::OverrideConfig)
+      definition = instance_double(GitHooks::CheckDefinition)
+      allow(GitHooks::Repository).to receive(:new).and_return(repo)
+      allow(GitHooks::OverrideConfig).to receive(:new).with(repo: repo).and_return(config)
+      allow(GitHooks::CheckRegistry).to receive(:find!).with('migrations-check').and_return(definition)
+      allow(config).to receive(:set_option)
 
-      expect { run_cli(['disabled']) }.to output("No hooks disabled.\n").to_stdout
+      expect { run_cli(%w[disable migrations-check]) }.to output("Disabled: migrations-check\n").to_stdout
+      expect(config).to have_received(:set_option).with(definition, 'enabled', false)
     end
 
-    it 'prints disabled hook names' do
-      installer = instance_double(GitHooks::Installer, disabled_hooks: %w[pre-commit commit-msg])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
-
-      expect { run_cli(['disabled']) }.to output("Disabled hooks: pre-commit, commit-msg\n").to_stdout
-    end
-  end
-
-  describe 'enable whitespace-check' do
-    it 'enables whitespace-check and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, enable: [])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
-      allow(installer).to receive(:enable_whitespace_check)
-
-      expect { run_cli(%w[enable whitespace-check]) }.to output("Enabled: whitespace-check\n").to_stdout
-      expect(installer).to have_received(:enable_whitespace_check)
+    it 'exits with usage when no check given' do
+      expect { run_cli(['disable']) }.to raise_error(SystemExit) do |e|
+        expect(e.status).to eq(1)
+      end
     end
   end
 
-  describe 'disable whitespace-check' do
-    it 'disables whitespace-check and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, disable: [])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
-      allow(installer).to receive(:disable_whitespace_check)
+  describe 'set' do
+    it 'updates a check option' do
+      repo = instance_double(GitHooks::Repository)
+      config = instance_double(GitHooks::OverrideConfig)
+      definition = instance_double(GitHooks::CheckDefinition)
+      allow(GitHooks::Repository).to receive(:new).and_return(repo)
+      allow(GitHooks::OverrideConfig).to receive(:new).with(repo: repo).and_return(config)
+      allow(GitHooks::CheckRegistry).to receive(:find!).with('debugger-check').and_return(definition)
+      allow(config).to receive(:set_option)
 
-      expect { run_cli(%w[disable whitespace-check]) }.to output("Disabled: whitespace-check\n").to_stdout
-      expect(installer).to have_received(:disable_whitespace_check)
+      expect { run_cli(%w[set debugger-check on_fail fail]) }.to output("Updated: debugger-check on_fail=fail\n").to_stdout
+      expect(config).to have_received(:set_option).with(definition, 'on_fail', 'fail')
+    end
+
+    it 'exits with usage when arguments are missing' do
+      expect { run_cli(%w[set debugger-check on_fail]) }.to raise_error(SystemExit) do |e|
+        expect(e.status).to eq(1)
+      end
     end
   end
 
-  describe 'enable rubocop-check' do
-    it 'enables rubocop-check and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, enable: [])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
-      allow(installer).to receive(:enable_rubocop_check)
+  describe 'show-config' do
+    it 'prints effective merged config' do
+      repo = instance_double(GitHooks::Repository)
+      config = instance_double(GitHooks::OverrideConfig)
+      allow(GitHooks::Repository).to receive(:new).and_return(repo)
+      allow(GitHooks::OverrideConfig).to receive(:new).with(repo: repo).and_return(config)
+      allow(config).to receive(:effective_config).and_return({ 'PreCommit' => { 'DebuggerCheck' => { 'enabled' => true } } })
 
-      expect { run_cli(%w[enable rubocop-check]) }.to output("Enabled: rubocop-check\n").to_stdout
-      expect(installer).to have_received(:enable_rubocop_check)
-    end
-  end
-
-  describe 'disable rubocop-check' do
-    it 'disables rubocop-check and prints confirmation' do
-      installer = instance_double(GitHooks::Installer, disable: [])
-      allow(GitHooks::Installer).to receive(:new).and_return(installer)
-      allow(installer).to receive(:disable_rubocop_check)
-
-      expect { run_cli(%w[disable rubocop-check]) }.to output("Disabled: rubocop-check\n").to_stdout
-      expect(installer).to have_received(:disable_rubocop_check)
+      expect { run_cli(['show-config']) }.to output(/PreCommit/).to_stdout
+      expect(config).to have_received(:effective_config).with(GitHooks::CheckRegistry.all)
     end
   end
 

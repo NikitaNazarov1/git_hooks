@@ -4,3 +4,4 @@
 /spec/examples.txt
 git_hooks_spec*
 rails_git_hooks_spec*
+/hooks/

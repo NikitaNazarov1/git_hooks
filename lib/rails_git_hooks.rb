@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
 require_relative 'rails_git_hooks/version'
-require_relative 'rails_git_hooks/constants'
-require_relative 'rails_git_hooks/installer'
-
-module GitHooks
-  class Error < StandardError; end
-end
+require_relative 'rails_git_hooks/core/error'
+require_relative 'rails_git_hooks/config/constants'
+require_relative 'rails_git_hooks/core/check_result'
+require_relative 'rails_git_hooks/core/check_definition'
+require_relative 'rails_git_hooks/runtime/repository'
+require_relative 'rails_git_hooks/runtime/file_matcher'
+require_relative 'rails_git_hooks/runtime/dependency_checker'
+require_relative 'rails_git_hooks/runtime/policy_resolver'
+require_relative 'rails_git_hooks/runtime/override_config'
+require_relative 'rails_git_hooks/checks'
+require_relative 'rails_git_hooks/runtime/check_registry'
+require_relative 'rails_git_hooks/runtime/runner'
+require_relative 'rails_git_hooks/install/installer'
+require_relative 'rails_git_hooks/runtime'

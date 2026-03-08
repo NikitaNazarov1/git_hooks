@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'rails_git_hooks'
+require 'yaml'
 
 module GitHooks
   class CLI
-    FEATURE_FLAG_TOKENS = GitHooks::Constants::FEATURE_FLAG_FILES.keys.freeze
-
     def self.run(argv = ARGV)
       new.run(argv)
     end
@@ -16,12 +15,16 @@ module GitHooks
         run_install(argv[1..])
       when 'list'
         run_list
+      when 'init'
+        run_init
       when 'disable'
         run_disable(argv[1..])
       when 'enable'
         run_enable(argv[1..])
-      when 'disabled'
-        run_disabled
+      when 'set'
+        run_set(argv[1..])
+      when 'show-config'
+        run_show_config
       when nil, '-h', '--help'
         print_help
       else
@@ -43,92 +46,107 @@ module GitHooks
     end
 
     def run_list
-      puts "Available hooks: #{Installer.available_hook_names.join(', ')}"
+      repo = Repository.new
+      config = OverrideConfig.new(repo: repo)
+
+      puts 'Available hooks:'
+      Installer.available_hook_names.each { |name| puts "  #{name}" }
+      puts
+      puts 'Available checks:'
+      CheckRegistry.all.each do |definition|
+        check_config = config.config_for(definition)
+        puts "  #{definition.key} (#{definition.hook_section}/#{definition.config_name}, enabled=#{check_config['enabled']})"
+      end
+    rescue GitHooks::Error
+      puts 'Available hooks:'
+      Installer.available_hook_names.each { |name| puts "  #{name}" }
+      puts
+      puts 'Available checks:'
+      CheckRegistry.all.each do |definition|
+        puts "  #{definition.key} (#{definition.hook_section}/#{definition.config_name})"
+      end
+    end
+
+    def run_init
+      config = OverrideConfig.new(repo: Repository.new)
+      config.init
+      puts "Initialized #{Constants::CONFIG_FILE}"
     end
 
     def run_disable(args)
-      tokens = parse_tokens(args)
-      if tokens.empty?
-        warn 'Usage: rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]'
-        warn "Use '*' to disable all hooks."
+      key = args.first
+      if key.nil?
+        warn 'Usage: rails_git_hooks disable CHECK_NAME'
         exit 1
       end
-      installer = Installer.new
-      hook_names, feature_flags = split_tokens(tokens)
-      feature_flags.each { |name| installer.public_send(:"disable_#{name.tr('-', '_')}") }
-      installer.disable(*hook_names) if hook_names.any?
-      puts "Disabled: #{(hook_names + feature_flags).join(', ')}"
-    rescue GitHooks::Error => e
-      warn "Error: #{e.message}"
-      exit 1
+
+      repo = Repository.new
+      definition = CheckRegistry.find!(key)
+      OverrideConfig.new(repo: repo).set_option(definition, 'enabled', false)
+      puts "Disabled: #{key}"
     end
 
     def run_enable(args)
-      tokens = parse_tokens(args)
-      if tokens.empty?
-        warn 'Usage: rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]'
+      key = args.first
+      if key.nil?
+        warn 'Usage: rails_git_hooks enable CHECK_NAME'
         exit 1
       end
-      installer = Installer.new
-      hook_names, feature_flags = split_tokens(tokens)
-      feature_flags.each { |name| installer.public_send(:"enable_#{name.tr('-', '_')}") }
-      installer.enable(*hook_names) if hook_names.any?
-      puts "Enabled: #{(hook_names + feature_flags).join(', ')}"
-    rescue GitHooks::Error => e
-      warn "Error: #{e.message}"
-      exit 1
+
+      repo = Repository.new
+      definition = CheckRegistry.find!(key)
+      OverrideConfig.new(repo: repo).set_option(definition, 'enabled', true)
+      puts "Enabled: #{key}"
     end
 
-    def parse_tokens(args)
-      args.reject { |a| a.start_with?('-') }
-    end
-
-    def split_tokens(tokens)
-      feature_flags = tokens & FEATURE_FLAG_TOKENS
-      hook_names = tokens - FEATURE_FLAG_TOKENS
-      [hook_names, feature_flags]
-    end
-
-    def run_disabled
-      installer = Installer.new
-      list = installer.disabled_hooks
-      if list.empty?
-        puts 'No hooks disabled.'
-      else
-        puts "Disabled hooks: #{list.join(', ')}"
+    def run_set(args)
+      key, option, value = args
+      if key.nil? || option.nil? || value.nil?
+        warn 'Usage: rails_git_hooks set CHECK_NAME OPTION VALUE'
+        exit 1
       end
-    rescue GitHooks::Error => e
-      warn "Error: #{e.message}"
-      exit 1
+
+      definition = CheckRegistry.find!(key)
+      OverrideConfig.new(repo: Repository.new).set_option(definition, option, value)
+      puts "Updated: #{key} #{option}=#{value}"
+    end
+
+    def run_show_config
+      repo = Repository.new
+      config = OverrideConfig.new(repo: repo).effective_config(CheckRegistry.all)
+      puts YAML.dump(config)
     end
 
     def print_help
       puts <<~HELP
-        rails_git_hooks - Install git hooks for Jira commit prefix and RuboCop
+        rails_git_hooks - Install configurable Git hooks
 
         Usage:
           rails_git_hooks install [HOOK...]
-          rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]   (use * for all hooks)
-          rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]
-          rails_git_hooks disabled
           rails_git_hooks list
+          rails_git_hooks init
+          rails_git_hooks enable CHECK_NAME
+          rails_git_hooks disable CHECK_NAME
+          rails_git_hooks set CHECK_NAME OPTION VALUE
+          rails_git_hooks show-config
           rails_git_hooks --help
 
         Commands:
           install   Install hooks into current repo's .git/hooks.
-          disable   Disable hooks or whitespace-check / rubocop-check / migrations-check (pre-commit options).
-          enable    Re-enable disabled hooks or enable whitespace-check / rubocop-check / migrations-check.
-          disabled  List currently disabled hooks.
-          list      List available hook names.
+          list      List available hooks and checks.
+          init      Create a sparse #{Constants::CONFIG_FILE} override file.
+          enable    Enable a check in #{Constants::CONFIG_FILE}.
+          disable   Disable a check in #{Constants::CONFIG_FILE}.
+          set       Set a check option like on_fail/on_warn/quiet.
+          show-config Print effective merged configuration.
 
         Examples:
           rails_git_hooks install
-          rails_git_hooks disable pre-commit
-          rails_git_hooks disable *                    # disable all hooks
-          rails_git_hooks enable pre-commit
-          rails_git_hooks enable whitespace-check      # trailing ws/conflict markers (off by default)
-          rails_git_hooks enable rubocop-check         # RuboCop on staged .rb files (off by default)
-          rails_git_hooks disable migrations-check     # turn off migrations check (on by default)
+          rails_git_hooks enable rubocop-check
+          rails_git_hooks disable migrations-check
+          rails_git_hooks set debugger-check on_fail fail
+          rails_git_hooks set rubocop-check quiet true
+          rails_git_hooks show-config
           rails_git_hooks install commit-msg pre-commit
       HELP
     end
