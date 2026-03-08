@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 module GitHooks
-  # Paths and default config (overcommit-style: templates/hooks, config/default.yml).
+  # Paths and default config (single source of truth).
   module Constants
     GEM_ROOT = File.expand_path('../..', __dir__)
     HOOKS_DIR = File.expand_path('templates/hooks', GEM_ROOT).freeze
-    CONFIG_DIR = File.expand_path('config', GEM_ROOT).freeze
 
     DISABLED_FILE = 'rails_git_hooks_disabled'
 

@@ -9,9 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - **Overcommit-style layout:** Hook templates live in `templates/hooks/` (was `lib/rails_git_hooks/templates/`). `rake sync_hooks` copies them to `hooks/` for manual install.
-- **Config:** Added `config/default.yml` for default hooks and feature-flag file names (documentation / future use).
-- **Constants:** Extracted `lib/rails_git_hooks/constants.rb` (GEM_ROOT, HOOKS_DIR, CONFIG_DIR, DEFAULT_HOOKS, FEATURE_FLAG_FILES). Installer and CLI use it.
-- Gemspec includes `templates/**/*` and `config/**/*`. Version set to 0.7.0.
+- **Constants:** Extracted `lib/rails_git_hooks/constants.rb` (GEM_ROOT, HOOKS_DIR, DEFAULT_HOOKS, FEATURE_FLAG_FILES). Installer and CLI use it. Single source of truth; no config file.
+- Gemspec includes `templates/**/*`. Version set to 0.7.0.
 
 ## [0.6.1]
 
