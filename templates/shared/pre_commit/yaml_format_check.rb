@@ -16,7 +16,7 @@ staged.each do |path|
 
   content = File.read(path)
   begin
-    YAML.load(content)
+    YAML.load(content) # rubocop:disable Security/YAMLLoad
   rescue Psych::SyntaxError => e
     loc = e.line ? "#{path}:#{e.line}" : path
     warnings << "#{loc}: #{e.message}"

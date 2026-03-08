@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 #
-# Blocks commits on default branch (master/main). Warns on debugger statements. Validates staged YAML.
+# Blocks commits on default branch (master/main). Warns on debugger statements. Validates staged YAML and JSON.
 # Optionally runs RuboCop and whitespace/conflict checks.
 # Logic is in templates/shared/pre_commit/ for easier maintenance and adding new checks.
 
@@ -25,4 +25,5 @@ load File.join(hooks_dir, 'pre_commit', 'whitespace_check.rb')
 load File.join(hooks_dir, 'pre_commit', 'default_branch.rb')
 load File.join(hooks_dir, 'pre_commit', 'debugger_check.rb')
 load File.join(hooks_dir, 'pre_commit', 'yaml_format_check.rb')
+load File.join(hooks_dir, 'pre_commit', 'json_format_check.rb')
 load File.join(hooks_dir, 'pre_commit', 'rubocop_check.rb')

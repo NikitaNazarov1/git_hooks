@@ -13,10 +13,10 @@ Most useful git hooks for Rails and Ruby. Install only what you need. Turn hooks
 | Hook | Description |
 |------|-------------|
 | **commit-msg** | Adds `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
-| **pre-commit** | Blocks commits to `master`/`main`. Warns about debugger statements and invalid staged YAML (`.yml`/`.yaml`). Optional: RuboCop, trailing-whitespace/conflict checks. |
+| **pre-commit** | Blocks commits to `master`/`main`. Warns about debugger statements and invalid staged YAML (`.yml`/`.yaml`) and JSON (`.json`). Optional: RuboCop, trailing-whitespace/conflict checks. |
 | **pre-push** | Runs `bundle exec rspec` before push and blocks push if tests fail. |
 
-- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger and YAML warnings; RuboCop and whitespace checks are off).
+- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger, YAML and JSON format warnings; RuboCop and whitespace checks are off).
 - **Optional:** `pre-push`, RuboCop, and whitespace/conflict checks — enable when you want them.
 
 ---
@@ -119,6 +119,7 @@ Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until y
 - Blocks commits to `master` or `main`. You must commit from a feature branch.
 - **Debugger check** — Warns (does not block) when staged files contain debugger statements: Ruby (`binding.pry`, `debugger`, `byebug`, `binding.irb`), JavaScript/TypeScript (`.js`, `.jsx`, `.ts`, `.tsx` — `debugger`), Python (`breakpoint()`, `pdb.set_trace()`, `ipdb.set_trace()`).
 - **YAML format check** — Warns (does not block) when any staged `.yml` or `.yaml` file is not valid YAML (parse error). Reports file and line from the parser.
+- **JSON format check** — Warns (does not block) when any staged `.json` file is not valid JSON (parse error). Reports file and parser message.
 
 **Optional (off by default):**
 
@@ -143,7 +144,7 @@ Copy the **entire** `hooks/` directory into your repo’s `.git/hooks/` (so the 
 | Script | Notes |
 |--------|--------|
 | [commit-msg](hooks/commit-msg) | Jira-style ticket prefix; no config. |
-| [pre-commit](hooks/pre-commit) | Branch protection + debugger warnings + YAML format check; optional RuboCop (requires `rubocop` gem). |
+| [pre-commit](hooks/pre-commit) | Branch protection + debugger, YAML and JSON format warnings; optional RuboCop (requires `rubocop` gem). |
 | [pre-push](hooks/pre-push) | Runs `bundle exec rspec`; edit for Minitest if needed. |
 
 ---
