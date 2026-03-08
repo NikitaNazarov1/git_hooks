@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'fileutils'
 require 'bundler/gem_tasks'
 
 begin
@@ -17,10 +18,11 @@ rescue LoadError
   # RuboCop not available
 end
 
-desc 'Sync hook templates from lib/rails_git_hooks/templates to hooks/ (for manual install)'
+desc 'Sync hook templates from templates/hooks to hooks/ (for manual install; overcommit-style layout)'
 task :sync_hooks do
-  templates_dir = File.expand_path('lib/rails_git_hooks/templates', __dir__)
+  templates_dir = File.expand_path('templates/hooks', __dir__)
   hooks_dir = File.expand_path('hooks', __dir__)
+  FileUtils.mkdir_p(hooks_dir)
   Dir.each_child(templates_dir) do |name|
     next unless File.file?(File.join(templates_dir, name))
 

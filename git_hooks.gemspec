@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.metadata['source_code_uri'] = 'https://github.com/NikitaNazarov1/rails_git_hooks'
   spec.metadata['changelog_uri'] = 'https://github.com/NikitaNazarov1/rails_git_hooks/blob/main/CHANGELOG.md'
 
-  spec.files = Dir['lib/**/*', 'bin/*'] + %w[README.md LICENSE CHANGELOG.md]
+  spec.files = Dir['lib/**/*', 'bin/*', 'templates/**/*', 'config/**/*'] + %w[README.md LICENSE CHANGELOG.md]
   spec.bindir        = 'bin'
   spec.executables   = ['rails_git_hooks']
   spec.require_paths = ['lib']

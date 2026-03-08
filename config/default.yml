@@ -1,0 +1,12 @@
+# Default configuration for rails_git_hooks (overcommit-style layout).
+# Hooks installed when running `rails_git_hooks install` with no arguments.
+default_hooks:
+  - commit-msg
+  - pre-commit
+
+# Pre-commit feature flags (off by default). Enable with:
+#   rails_git_hooks enable whitespace-check
+#   rails_git_hooks enable rubocop-check
+feature_flags:
+  whitespace-check: rails_git_hooks_whitespace_check
+  rubocop-check: rails_git_hooks_rubocop
