@@ -49,7 +49,7 @@ module GitHooks
     def run_disable(args)
       tokens = parse_tokens(args)
       if tokens.empty?
-        warn 'Usage: rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check]'
+        warn 'Usage: rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]'
         warn "Use '*' to disable all hooks."
         exit 1
       end
@@ -66,7 +66,7 @@ module GitHooks
     def run_enable(args)
       tokens = parse_tokens(args)
       if tokens.empty?
-        warn 'Usage: rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check]'
+        warn 'Usage: rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]'
         exit 1
       end
       installer = Installer.new
@@ -108,16 +108,16 @@ module GitHooks
 
         Usage:
           rails_git_hooks install [HOOK...]
-          rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check]   (use * for all hooks)
-          rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check]
+          rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]   (use * for all hooks)
+          rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check] [migrations-check]
           rails_git_hooks disabled
           rails_git_hooks list
           rails_git_hooks --help
 
         Commands:
           install   Install hooks into current repo's .git/hooks.
-          disable   Disable hooks or whitespace-check / rubocop-check (pre-commit options).
-          enable    Re-enable disabled hooks or enable whitespace-check / rubocop-check.
+          disable   Disable hooks or whitespace-check / rubocop-check / migrations-check (pre-commit options).
+          enable    Re-enable disabled hooks or enable whitespace-check / rubocop-check / migrations-check.
           disabled  List currently disabled hooks.
           list      List available hook names.
 
@@ -128,6 +128,7 @@ module GitHooks
           rails_git_hooks enable pre-commit
           rails_git_hooks enable whitespace-check      # trailing ws/conflict markers (off by default)
           rails_git_hooks enable rubocop-check         # RuboCop on staged .rb files (off by default)
+          rails_git_hooks disable migrations-check     # turn off migrations check (on by default)
           rails_git_hooks install commit-msg pre-commit
       HELP
     end

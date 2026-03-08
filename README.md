@@ -16,8 +16,8 @@ Most useful git hooks for Rails and Ruby. Install only what you need. Turn hooks
 | **pre-commit** | Blocks commits to `master`/`main`. Warns about debugger statements and invalid staged YAML (`.yml`/`.yaml`) and JSON (`.json`). Optional: RuboCop, trailing-whitespace/conflict checks. |
 | **pre-push** | Runs `bundle exec rspec` before push and blocks push if tests fail. |
 
-- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger, YAML and JSON format warnings; RuboCop and whitespace checks are off).
-- **Optional:** `pre-push`, RuboCop, and whitespace/conflict checks — enable when you want them.
+- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger, YAML/JSON format warnings + migrations check; RuboCop and whitespace checks are off).
+- **Optional:** `pre-push`, RuboCop, and whitespace/conflict checks — enable when you want them. Migrations check is on by default; disable with `rails_git_hooks disable migrations-check` if needed.
 
 ---
 
@@ -64,6 +64,8 @@ rails_git_hooks enable rubocop-check
 
 # Reject trailing whitespace and conflict markers in staged files
 rails_git_hooks enable whitespace-check
+
+# Migrations check is on by default; disable with: rails_git_hooks disable migrations-check
 ```
 
 **Tip:** If a hook doesn’t run, make it executable: `chmod +x .git/hooks/<hook-name>`
@@ -92,6 +94,7 @@ rails_git_hooks disable *                 # turn off all
 rails_git_hooks enable pre-commit         # turn pre-commit back on
 rails_git_hooks enable rubocop-check      # run RuboCop on staged .rb files
 rails_git_hooks enable whitespace-check   # reject trailing ws & conflict markers
+rails_git_hooks disable migrations-check # turn off migrations check (on by default)
 ```
 
 Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until you run `enable`.
@@ -128,6 +131,8 @@ Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until y
 
 2. **Whitespace & conflict markers** — Reject commits that add trailing spaces/tabs or `<<<<<<<` / `=======` / `>>>>>>>` in staged files.  
    `rails_git_hooks enable whitespace-check` / `disable whitespace-check`.
+
+3. **Migrations check** — Warns (does not block) when: (a) migration file(s) are staged but neither `db/schema.rb` nor `db/structure.sql` is staged; (b) data migration file(s) in `db/data/` or `db/data_migrate/` are staged but `db/data_schema.rb` is not. **On by default.** Disable with `rails_git_hooks disable migrations-check`.
 
 ---
 

@@ -163,6 +163,30 @@ RSpec.describe GitHooks::Installer do
     end
   end
 
+  describe 'migrations check feature (on by default)' do
+    it 'migrations_check_enabled? is true when disabled file does not exist' do
+      expect(installer.migrations_check_enabled?).to eq(true)
+    end
+
+    it 'enable_migrations_check removes the disabled file' do
+      installer.disable_migrations_check
+      installer.enable_migrations_check
+      expect(installer.migrations_check_enabled?).to eq(true)
+      expect(File).not_to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['migrations-check']))
+    end
+
+    it 'disable_migrations_check creates the disabled file' do
+      installer.disable_migrations_check
+      expect(installer.migrations_check_enabled?).to eq(false)
+      expect(File).to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['migrations-check']))
+    end
+
+    it 'enable_migrations_check is a no-op when already enabled' do
+      expect { installer.enable_migrations_check }.not_to raise_error
+      expect(installer.migrations_check_enabled?).to eq(true)
+    end
+  end
+
   describe 'find_git_dir (when git_dir not provided)' do
     it 'raises when not inside a git repository' do
       allow_any_instance_of(described_class).to receive(:find_git_dir).and_raise(

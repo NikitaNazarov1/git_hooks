@@ -3,7 +3,7 @@
 require 'fileutils'
 
 module GitHooks
-  class Installer
+  class Installer # rubocop:disable Metrics/ClassLength
     def initialize(git_dir: nil)
       @git_dir = git_dir || find_git_dir
     end
@@ -91,6 +91,26 @@ module GitHooks
 
     def rubocop_check_enabled?
       feature_flag_enabled?('rubocop-check')
+    end
+
+    def enable_migrations_check
+      # Migrations check is on by default; "disabled" file turns it off.
+      file = Constants::FEATURE_FLAG_FILES['migrations-check']
+      return unless file
+
+      FileUtils.rm_f(File.join(@git_dir, file))
+    end
+
+    def disable_migrations_check
+      file = Constants::FEATURE_FLAG_FILES['migrations-check']
+      return unless file
+
+      File.write(File.join(@git_dir, file), '')
+    end
+
+    def migrations_check_enabled?
+      file = Constants::FEATURE_FLAG_FILES['migrations-check']
+      file && !File.exist?(File.join(@git_dir, file))
     end
 
     private

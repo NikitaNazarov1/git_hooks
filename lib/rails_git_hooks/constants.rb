@@ -15,7 +15,8 @@ module GitHooks
     # Pre-commit feature flag file names (keys = CLI tokens).
     FEATURE_FLAG_FILES = {
       'whitespace-check' => 'rails_git_hooks_whitespace_check',
-      'rubocop-check' => 'rails_git_hooks_rubocop'
+      'rubocop-check' => 'rails_git_hooks_rubocop',
+      'migrations-check' => 'rails_git_hooks_migrations_check_disabled' # when present, check is off
     }.freeze
   end
 end

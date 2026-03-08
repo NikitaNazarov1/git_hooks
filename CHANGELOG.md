@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Pre-commit YAML format check** — Warns (does not block) when any staged `.yml` or `.yaml` file fails to parse (invalid YAML). Reports file and line from the parser. On by default with pre-commit.
 - **Pre-commit JSON format check** — Warns (does not block) when any staged `.json` file fails to parse (invalid JSON). Reports file and parser message. On by default with pre-commit.
+- **Pre-commit migrations check** — Warns (does not block) when: (a) migration file(s) are staged but neither `db/schema.rb` nor `db/structure.sql` is staged; (b) data migration file(s) in `db/data/` or `db/data_migrate/` are staged but `db/data_schema.rb` is not. **On by default.** Disable with `rails_git_hooks disable migrations-check`.
 
 ## [0.7.0] (latest)
 
