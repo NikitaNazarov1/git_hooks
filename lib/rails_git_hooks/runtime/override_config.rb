@@ -29,10 +29,8 @@ module GitHooks
     end
 
     def effective_config(registry)
-      registry.group_by(&:hook_section).each_with_object({}) do |(section_name, definitions), out|
-        out[section_name] = definitions.to_h do |definition|
-          [definition.config_name, config_for(definition)]
-        end
+      registry.group_by(&:hook_section).transform_values do |definitions|
+        definitions.to_h { |definition| [definition.config_name, config_for(definition)] }
       end
     end
 

@@ -1,5 +1,4 @@
 # Relax cops that would require heavy refactors for this small gem
-plugins: []
 
 AllCops:
   NewCops: enable

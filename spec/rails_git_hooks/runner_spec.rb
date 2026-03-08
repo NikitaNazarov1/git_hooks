@@ -74,7 +74,8 @@ RSpec.describe GitHooks::Runner do
       allow(dependencies).to receive(:check).and_return(GitHooks::CheckResult.pass)
       allow(GitHooks::PolicyResolver).to receive(:new).and_return(policy)
       allow(policy).to receive(:resolve) { |result, _config| result }
-      allow(definition.klass).to receive(:new).and_return(instance_double(definition.klass.name, run: GitHooks::CheckResult.pass))
+      double_run = instance_double(definition.klass.name, run: GitHooks::CheckResult.pass)
+      allow(definition.klass).to receive(:new).and_return(double_run)
 
       expect do
         described_class.new(repo: repo, hook_name: :pre_commit, argv: [], stdin: '').run

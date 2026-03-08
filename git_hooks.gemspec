@@ -25,7 +25,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 1.0'
-  spec.add_development_dependency 'rubocop-minitest', '~> 0.39'
-  spec.add_development_dependency 'rubocop-rake', '~> 0.7'
+  # Pin to < 1.72 to avoid auto-loading rubocop-* plugins from bundle (minitest, rake, shopify, etc.)
+  spec.add_development_dependency 'rubocop', '>= 1.0', '< 1.72'
 end
