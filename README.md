@@ -16,7 +16,7 @@ Most useful git hooks for Rails and Ruby. Install only what you need. Turn hooks
 | **pre-commit** | Blocks commits to `master`/`main`. Warns about debugger statements (Ruby, JS/TS, Python). Optional: RuboCop, trailing-whitespace/conflict checks. |
 | **pre-push** | Runs `bundle exec rspec` before push and blocks push if tests fail. |
 
-- **Installed by default:** `commit-msg` and `pre-commit` (branch protection only; RuboCop and whitespace checks are off).
+- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger warnings; RuboCop and whitespace checks are off).
 - **Optional:** `pre-push`, RuboCop, and whitespace/conflict checks — enable when you want them.
 
 ---
