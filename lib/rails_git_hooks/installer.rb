@@ -4,8 +4,6 @@ require 'fileutils'
 
 module GitHooks
   class Installer
-    include Constants
-
     def initialize(git_dir: nil)
       @git_dir = git_dir || find_git_dir
     end
