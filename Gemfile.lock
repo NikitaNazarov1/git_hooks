@@ -61,6 +61,9 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
+    rubocop-rake (0.7.1)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.72.1)
     ruby-progressbar (1.13.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
@@ -76,6 +79,7 @@ DEPENDENCIES
   rspec (~> 3.0)
   rubocop (~> 1.0)
   rubocop-minitest (~> 0.39)
+  rubocop-rake (~> 0.7)
 
 BUNDLED WITH
    2.7.2
