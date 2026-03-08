@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unrelised
+## [0.7.1]
 
 ### Added
 
@@ -14,14 +14,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Pre-commit YAML format check** — Warns (does not block) when any staged `.yml` or `.yaml` file fails to parse (invalid YAML). Reports file and line from the parser. On by default with pre-commit.
 - **Pre-commit JSON format check** — Warns (does not block) when any staged `.json` file fails to parse (invalid JSON). Reports file and parser message. On by default with pre-commit.
 - **Pre-commit migrations check** — Warns (does not block) when: (a) migration file(s) are staged but neither `db/schema.rb` nor `db/structure.sql` is staged; (b) data migration file(s) in `db/data/` or `db/data_migrate/` are staged but `db/data_schema.rb` is not. **On by default.** Disable with `rails_git_hooks disable migrations-check`.
+- **Defaults YAML** — `lib/rails_git_hooks/config/defaults.yml` holds default settings for every check and hook. `DefaultsLoader` reads it; `OverrideConfig` uses it as the base when merging with `.rails_git_hooks.yml`. Edit the YAML to change built-in defaults.
 
 ### Changed
 
 - **CLI redesign** — Replaced per-check flag-file commands with generic config-driven commands: `install`, `list`, `init`, `enable`, `disable`, `set`, and `show-config`.
-- **Manual install layout** — `hooks/` now syncs the hook bootstraps plus the embedded runtime directory instead of the old `templates/shared/` script tree.
+- **Manual install layout** — Manual install is via `bundle exec rails_git_hooks install` only; dropped `rake sync_hooks` and the repo `hooks/` tree.
 - **Dependency handling** — Checks can now declare executables, Ruby libraries, files, and install hints, with centralized `on_missing_dependency` policy handling.
+- **Runtime install** — Installer copies all runtime files (including `config/defaults.yml`), not only `*.rb`, into `.git/hooks/rails_git_hooks/`.
+- **Removed `hooks/` directory** — `/hooks/` added to `.gitignore`. README manual-install section updated.
 
-## [0.7.0] (latest)
+## [0.7.0]
 
 ### Changed
 
