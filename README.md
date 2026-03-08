@@ -13,7 +13,7 @@ Most useful git hooks for Rails and Ruby. Install only what you need. Turn hooks
 | Hook | Description |
 |------|-------------|
 | **commit-msg** | Adds `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
-| **pre-commit** | Blocks commits to `master`/`main`. Optional: RuboCop on staged `.rb` files, trailing-whitespace/conflict checks. |
+| **pre-commit** | Blocks commits to `master`/`main`. Rejects debugger statements (Ruby, JS/TS, Python). Optional: RuboCop, trailing-whitespace/conflict checks. |
 | **pre-push** | Runs `bundle exec rspec` before push and blocks push if tests fail. |
 
 - **Installed by default:** `commit-msg` and `pre-commit` (branch protection only; RuboCop and whitespace checks are off).
@@ -117,6 +117,7 @@ Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until y
 **Always on (when installed):**
 
 - Blocks commits to `master` or `main`. You must commit from a feature branch.
+- **Debugger check** — Rejects commits that contain debugger statements in staged files: Ruby (`binding.pry`, `debugger`, `byebug`, `binding.irb`), JavaScript/TypeScript (`.js`, `.jsx`, `.ts`, `.tsx` — `debugger`), Python (`breakpoint()`, `pdb.set_trace()`, `ipdb.set_trace()`).
 
 **Optional (off by default):**
 
@@ -141,7 +142,7 @@ Copy the **entire** `hooks/` directory into your repo’s `.git/hooks/` (so the 
 | Script | Notes |
 |--------|--------|
 | [commit-msg](hooks/commit-msg) | Jira-style ticket prefix; no config. |
-| [pre-commit](hooks/pre-commit) | Branch protection; optional RuboCop (requires `rubocop` gem). |
+| [pre-commit](hooks/pre-commit) | Branch protection + debugger check; optional RuboCop (requires `rubocop` gem). |
 | [pre-push](hooks/pre-push) | Runs `bundle exec rspec`; edit for Minitest if needed. |
 
 ---

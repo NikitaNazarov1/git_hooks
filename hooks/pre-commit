@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 #
-# Blocks commits on default branch (master/main). Optionally runs RuboCop and whitespace/conflict checks.
+# Blocks commits on default branch (master/main), blocks debugger statements (Ruby/JS/TS/Python).
+# Optionally runs RuboCop and whitespace/conflict checks.
 # Logic is in templates/shared/pre_commit/ for easier maintenance and adding new checks.
 
 # Bootstrap: resolve .git dir and skip if hook is disabled
@@ -22,4 +23,5 @@ hooks_dir = File.dirname(File.expand_path(__FILE__))
 
 load File.join(hooks_dir, 'pre_commit', 'whitespace_check.rb')
 load File.join(hooks_dir, 'pre_commit', 'default_branch.rb')
+load File.join(hooks_dir, 'pre_commit', 'debugger_check.rb')
 load File.join(hooks_dir, 'pre_commit', 'rubocop_check.rb')
