@@ -1,34 +1,37 @@
-# Git Hooks
+# Rails Git Hooks
 
 [![Gem Version](https://badge.fury.io/rb/rails_git_hooks.svg)](https://badge.fury.io/rb/rails_git_hooks)
 [![Build Status](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
 [![RuboCop](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml?query=branch%3Amain)
 
-> Automate Jira ticket prefixes and RuboCop checks with git hooks. Built for Rails and Ruby projects.
+Most useful git hooks for Rails and Ruby. Install only what you need. Turn hooks off anytime without uninstalling.
 
 ---
 
-## What you get
+## What’s included
 
-| Hook | What it does |
-|------|--------------|
-| **commit-msg** | Prepends `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
-| **pre-commit** | Blocks commits to `master`/`main` and runs RuboCop on staged `.rb` files. |
-| **pre-push** | Runs the full test suite (`bundle exec rspec`) before push; aborts push if tests fail. |
+| Hook | Description |
+|------|-------------|
+| **commit-msg** | Adds `[TICKET-123]` to commit messages when your branch name contains a Jira ticket. |
+| **pre-commit** | Blocks commits to `master`/`main`. Warns about debugger statements (Ruby, JS/TS, Python). Optional: RuboCop, trailing-whitespace/conflict checks. |
+| **pre-push** | Runs `bundle exec rspec` before push and blocks push if tests fail. |
 
-Hooks can be disabled temporarily (e.g. for quick WIP commits or CI) without uninstalling.
+- **Installed by default:** `commit-msg` and `pre-commit` (branch protection + debugger warnings; RuboCop and whitespace checks are off).
+- **Optional:** `pre-push`, RuboCop, and whitespace/conflict checks — enable when you want them.
 
 ---
 
 ## Quick start
 
-**1. Install the gem**
+### 1. Install the gem
+
+**Standalone:**
 
 ```bash
 gem install rails_git_hooks
 ```
 
-Or with Bundler — add to your `Gemfile`:
+**With Bundler** — add to your `Gemfile`:
 
 ```ruby
 gem "rails_git_hooks"
@@ -38,63 +41,57 @@ Then:
 
 ```bash
 bundle install
+```
+
+### 2. Install hooks
+
+From your project root (inside the git repo):
+
+```bash
 bundle exec rails_git_hooks install
 ```
 
-This installs **commit-msg** (Jira ticket prefix) and **pre-commit** (blocks commits on `master`/`main` + RuboCop on staged `.rb` files) by default.
+This installs **commit-msg** and **pre-commit** (default-branch protection only). No Jira project key needed — the hook detects ticket IDs like `APD-123` or `PROJ-456` from the branch name.
 
-**2. Set your Jira project key**
-
-Replace the default by passing your project key at install time or via env:
+### 3. Optional: add more
 
 ```bash
-rails_git_hooks install --jira MYPROJ
-# or
-export GIT_HOOKS_JIRA_PROJECT=MYPROJ
-rails_git_hooks install
+# Run tests before every push
+rails_git_hooks install pre-push
+
+# Run RuboCop on staged .rb files before commit
+rails_git_hooks enable rubocop-check
+
+# Reject trailing whitespace and conflict markers in staged files
+rails_git_hooks enable whitespace-check
 ```
 
-Default is `APD` if not set. For manual install: replace `JIRA_PROJECT_KEY` in the commit-msg script with your key (e.g. `APD`).
-
-To also run the full test suite before push:  
-`rails_git_hooks install pre-push`
-
-> **Tip:** If the pre-commit hook doesn’t run, make it executable: `chmod +x .git/hooks/pre-commit`
+**Tip:** If a hook doesn’t run, make it executable: `chmod +x .git/hooks/<hook-name>`
 
 ---
 
-## Commands
+## Command reference
 
-Run from your project root (inside a git repo).
+All commands are run from the project root.
 
 | Command | Description |
 |---------|-------------|
-| `rails_git_hooks install [HOOK...] [--jira PROJECT]` | Install hooks. No args = install default (commit-msg + pre-commit). |
+| `rails_git_hooks install [HOOK...]` | Install hooks. No arguments = install default (commit-msg + pre-commit). |
 | `rails_git_hooks list` | List available hook names. |
-| `rails_git_hooks disable HOOK [HOOK...] [whitespace-check]` | Disable hooks (use `*` for all) or the whitespace-check. |
-| `rails_git_hooks enable HOOK [HOOK...] [whitespace-check]` | Re-enable hooks or enable whitespace-check. |
-| `rails_git_hooks disabled` | Show which hooks are currently disabled. |
+| `rails_git_hooks disable HOOK [...]` | Disable hooks or options (use `*` for all). |
+| `rails_git_hooks enable HOOK [...]` | Re-enable hooks or enable optional checks. |
+| `rails_git_hooks disabled` | Show currently disabled hooks. |
 
-**Examples**
+**Common examples:**
 
 ```bash
-# Install everything with custom Jira key
-rails_git_hooks install --jira MYPROJ
-
-# Install only specific hooks
-rails_git_hooks install pre-commit commit-msg --jira APD
-
-# Temporarily disable pre-commit (e.g. for a quick fix)
-rails_git_hooks disable pre-commit
-
-# Disable all hooks
-rails_git_hooks disable *
-
-# Turn them back on
-rails_git_hooks enable pre-commit
-
-# Enable rejection of trailing whitespace and conflict markers in staged files (off by default)
-rails_git_hooks enable whitespace-check
+rails_git_hooks install                    # default hooks
+rails_git_hooks install pre-push          # add pre-push
+rails_git_hooks disable pre-commit        # turn off pre-commit temporarily
+rails_git_hooks disable *                 # turn off all
+rails_git_hooks enable pre-commit         # turn pre-commit back on
+rails_git_hooks enable rubocop-check      # run RuboCop on staged .rb files
+rails_git_hooks enable whitespace-check   # reject trailing ws & conflict markers
 ```
 
 Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until you run `enable`.
@@ -105,45 +102,48 @@ Disabled state is stored in `.git/rails_git_hooks_disabled` and persists until y
 
 ### commit-msg — Jira ticket prefix
 
-If your branch name contains a Jira ticket (e.g. `task/APD-1234/fix-bug`), the hook prepends `[APD-1234] ` to the commit message unless it’s already there.
+**What it does:** If the branch name contains a Jira-style ticket (e.g. `task/APD-1234/fix-bug`), the hook prepends `[APD-1234]` to the commit message — unless the message already starts with that format. Works with any project key (2–5 letters + digits); no config.
 
-**Example**
+**Example:**
 
 - Branch: `task/APD-1234/fix-bug`
-- You run: `git commit -m 'fix bug'`
+- Command: `git commit -m 'fix bug'`
 - Result: **`[APD-1234] fix bug`**
-
-Set the Jira project key at install time with `--jira PROJECT` or `GIT_HOOKS_JIRA_PROJECT`.
 
 ---
 
-### pre-commit — Default branch protection + RuboCop
+### pre-commit — Branch protection and optional checks
 
-1. **Blocks commits on `master` / `main`** — You must commit from a feature branch; direct commits to the default branch are rejected.
-2. **Runs RuboCop** on staged `.rb` files. If there are offenses, the commit is aborted.
-3. **Trailing whitespace / conflict markers** (off by default) — When enabled, rejects commits that add trailing spaces/tabs or `<<<<<<<` / `=======` / `>>>>>>>` in staged files. Enable with: `rails_git_hooks enable whitespace-check`. Disable with: `rails_git_hooks disable whitespace-check`.
+**Always on (when installed):**
 
-Requires the `rubocop` gem in your project. If the hook doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-commit`.
+- Blocks commits to `master` or `main`. You must commit from a feature branch.
+- **Debugger check** — Warns (does not block) when staged files contain debugger statements: Ruby (`binding.pry`, `debugger`, `byebug`, `binding.irb`), JavaScript/TypeScript (`.js`, `.jsx`, `.ts`, `.tsx` — `debugger`), Python (`breakpoint()`, `pdb.set_trace()`, `ipdb.set_trace()`).
+
+**Optional (off by default):**
+
+1. **RuboCop** — Run RuboCop on staged `.rb` files; commit fails if there are offenses.  
+   `rails_git_hooks enable rubocop-check` / `disable rubocop-check`. Requires the `rubocop` gem.
+
+2. **Whitespace & conflict markers** — Reject commits that add trailing spaces/tabs or `<<<<<<<` / `=======` / `>>>>>>>` in staged files.  
+   `rails_git_hooks enable whitespace-check` / `disable whitespace-check`.
 
 ---
 
 ### pre-push — Run tests before push
 
-Runs `bundle exec rspec` before every `git push`. If the test suite fails, the push is aborted so you don’t break CI.
-
-Requires the `rspec` gem (or for Minitest, edit the hook to use `bundle exec rake test`). If the hook doesn’t run, ensure it’s executable: `chmod +x .git/hooks/pre-push`.
+Runs `bundle exec rspec` before every `git push`. If the suite fails, the push is aborted. Not installed by default; add with `rails_git_hooks install pre-push`. For Minitest, edit the hook to use `bundle exec rake test`.
 
 ---
 
 ## Manual installation (without the gem)
 
-If you don’t want to use the gem, copy the scripts from `hooks/` into `.git/hooks`. The `hooks/` directory is synced from the gem templates via `rake sync_hooks` in development.
+Copy the **entire** `hooks/` directory into your repo’s `.git/hooks/` (so the hook scripts and the `pre_commit/`, `commit_msg/`, `pre_push/` subdirs are all under `.git/hooks/`). Run `rake sync_hooks` to regenerate `hooks/` from `templates/hooks/` and `templates/shared/`.
 
-| File | Notes |
-|------|--------|
-| [commit-msg](hooks/commit-msg) | Replace `JIRA_PROJECT_KEY` in the script with your Jira project key (e.g. `APD`). |
-| [pre-commit](hooks/pre-commit) | Requires the `rubocop` gem in the repo where you use it. |
-| [pre-push](hooks/pre-push) | Runs `bundle exec rspec`; edit to use `bundle exec rake test` for Minitest. |
+| Script | Notes |
+|--------|--------|
+| [commit-msg](hooks/commit-msg) | Jira-style ticket prefix; no config. |
+| [pre-commit](hooks/pre-commit) | Branch protection + debugger warnings; optional RuboCop (requires `rubocop` gem). |
+| [pre-push](hooks/pre-push) | Runs `bundle exec rspec`; edit for Minitest if needed. |
 
 ---
 
@@ -151,10 +151,10 @@ If you don’t want to use the gem, copy the scripts from `hooks/` into `.git/ho
 
 ```bash
 bundle install
-bundle exec rake              # run specs (default task)
+bundle exec rake              # run specs
 bundle exec rake build        # build the gem
-bundle exec rake install      # install the gem locally
-bundle exec rake sync_hooks   # copy templates to hooks/
+bundle exec rake install      # install locally
+bundle exec rake sync_hooks   # copy templates (hooks + shared subdirs) → hooks/
 ```
 
 ---

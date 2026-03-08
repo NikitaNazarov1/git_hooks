@@ -19,9 +19,15 @@ RSpec.describe GitHooks::Installer do
 
   let(:installer) { described_class.new(git_dir: @git_dir) }
 
+  describe '.available_hook_names' do
+    it 'returns hook names from templates directory (no git repo required)' do
+      expect(described_class.available_hook_names).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
+    end
+  end
+
   describe '#available_hooks' do
-    it 'returns hook names from templates directory' do
-      expect(installer.available_hooks).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
+    it 'returns same as .available_hook_names' do
+      expect(installer.available_hooks).to eq(described_class.available_hook_names)
     end
   end
 
@@ -41,21 +47,13 @@ RSpec.describe GitHooks::Installer do
       expect(File).not_to exist(File.join(@hooks_dir, 'commit-msg'))
     end
 
-    it 'substitutes JIRA_PROJECT_KEY in commit-msg with jira_project' do
-      installer_with_jira = described_class.new(git_dir: @git_dir, jira_project: 'MYPROJ')
-      installer_with_jira.install('commit-msg')
-      content = File.read(File.join(@hooks_dir, 'commit-msg'))
-      expect(content).to include('MYPROJ-\d+')
-      expect(content).not_to include('JIRA_PROJECT_KEY')
-    end
-
-    it 'uses ENV GIT_HOOKS_JIRA_PROJECT when jira_project not passed' do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('GIT_HOOKS_JIRA_PROJECT').and_return('ENVPROJ')
-      installer_env = described_class.new(git_dir: @git_dir)
-      installer_env.install('commit-msg')
-      content = File.read(File.join(@hooks_dir, 'commit-msg'))
-      expect(content).to include('ENVPROJ-\d+')
+    it 'installs commit-msg and shared Jira-prefix logic in commit_msg/ subdir' do
+      installer.install('commit-msg')
+      commit_msg_content = File.read(File.join(@hooks_dir, 'commit-msg'))
+      expect(commit_msg_content).to include("'commit_msg', 'jira_prefix.rb'")
+      jira_logic = File.read(File.join(@hooks_dir, 'commit_msg', 'jira_prefix.rb'))
+      expect(jira_logic).to include('([A-Z]{2,5}-\\d+)')
+      expect(jira_logic).to include('skip_if_already_prefixed')
     end
 
     it 'raises when hooks directory does not exist' do
@@ -75,7 +73,7 @@ RSpec.describe GitHooks::Installer do
     end
 
     it 'returns hook names from disabled file' do
-      disabled_path = File.join(@git_dir, GitHooks::Installer::DISABLED_FILE)
+      disabled_path = File.join(@git_dir, GitHooks::Constants::DISABLED_FILE)
       File.write(disabled_path, "pre-commit\ncommit-msg\n")
       expect(installer.disabled_hooks).to contain_exactly('pre-commit', 'commit-msg')
     end
@@ -106,7 +104,7 @@ RSpec.describe GitHooks::Installer do
     end
 
     it 'deletes disabled file when all hooks enabled' do
-      disabled_path = File.join(@git_dir, GitHooks::Installer::DISABLED_FILE)
+      disabled_path = File.join(@git_dir, GitHooks::Constants::DISABLED_FILE)
       installer.disable('pre-commit')
       expect(File).to exist(disabled_path)
       installer.enable('pre-commit')
@@ -127,18 +125,41 @@ RSpec.describe GitHooks::Installer do
     it 'enable_whitespace_check creates the flag file' do
       installer.enable_whitespace_check
       expect(installer.whitespace_check_enabled?).to eq(true)
-      expect(File).to exist(File.join(@git_dir, GitHooks::Installer::WHITESPACE_CHECK_FILE))
+      expect(File).to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['whitespace-check']))
     end
 
     it 'disable_whitespace_check removes the flag file' do
       installer.enable_whitespace_check
       installer.disable_whitespace_check
       expect(installer.whitespace_check_enabled?).to eq(false)
-      expect(File).not_to exist(File.join(@git_dir, GitHooks::Installer::WHITESPACE_CHECK_FILE))
+      expect(File).not_to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['whitespace-check']))
     end
 
     it 'disable_whitespace_check is a no-op when file does not exist' do
       expect { installer.disable_whitespace_check }.not_to raise_error
+    end
+  end
+
+  describe 'rubocop check feature' do
+    it 'rubocop_check_enabled? is false when file does not exist' do
+      expect(installer.rubocop_check_enabled?).to eq(false)
+    end
+
+    it 'enable_rubocop_check creates the flag file' do
+      installer.enable_rubocop_check
+      expect(installer.rubocop_check_enabled?).to eq(true)
+      expect(File).to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['rubocop-check']))
+    end
+
+    it 'disable_rubocop_check removes the flag file' do
+      installer.enable_rubocop_check
+      installer.disable_rubocop_check
+      expect(installer.rubocop_check_enabled?).to eq(false)
+      expect(File).not_to exist(File.join(@git_dir, GitHooks::Constants::FEATURE_FLAG_FILES['rubocop-check']))
+    end
+
+    it 'disable_rubocop_check is a no-op when file does not exist' do
+      expect { installer.disable_rubocop_check }.not_to raise_error
     end
   end
 

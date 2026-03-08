@@ -3,9 +3,9 @@
 
 #
 # Runs the full test suite before push. Push is aborted if tests fail.
-# Uses `bundle exec rspec`. For Minitest, edit to use `bundle exec rake test`.
+# Logic in templates/shared/pre_push/.
 
-# Git runs hooks with CWD = repo root; find .git from here
+# Bootstrap: resolve .git dir and skip if hook is disabled
 repo_root = Dir.pwd
 git_dir = File.join(repo_root, '.git')
 git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
@@ -15,7 +15,9 @@ if File.exist?(disabled_file)
   exit 0 if disabled.include?('*') || disabled.include?('pre-push')
 end
 
-require 'english'
+module RailsGitHooks
+end
+RailsGitHooks.const_set(:GIT_DIR, git_dir.freeze)
+hooks_dir = File.dirname(File.expand_path(__FILE__))
 
-system('bundle exec rspec')
-exit $CHILD_STATUS.to_s[-1].to_i
+load File.join(hooks_dir, 'pre_push', 'run_tests.rb')

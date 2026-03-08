@@ -34,17 +34,17 @@ RSpec.describe GitHooks::CLI do
   describe 'install' do
     it 'outputs installed hooks and passes no args to Installer (default: commit-msg + pre-commit)' do
       installer = instance_double(GitHooks::Installer, install: %w[commit-msg pre-commit])
-      allow(GitHooks::Installer).to receive(:new).with(jira_project: nil).and_return(installer)
+      allow(GitHooks::Installer).to receive(:new).with(no_args).and_return(installer)
 
       expect { run_cli(['install']) }.to output("Installed hooks: commit-msg, pre-commit\n").to_stdout
       expect(installer).to have_received(:install).with(no_args)
     end
 
-    it 'passes --jira to Installer' do
+    it 'passes hook names to Installer' do
       installer = instance_double(GitHooks::Installer, install: ['commit-msg'])
-      allow(GitHooks::Installer).to receive(:new).with(jira_project: 'MYPROJ').and_return(installer)
+      allow(GitHooks::Installer).to receive(:new).with(no_args).and_return(installer)
 
-      expect { run_cli(['install', '--jira', 'MYPROJ', 'commit-msg']) }.to output("Installed hooks: commit-msg\n").to_stdout
+      expect { run_cli(%w[install commit-msg]) }.to output("Installed hooks: commit-msg\n").to_stdout
       expect(installer).to have_received(:install).with('commit-msg')
     end
 
@@ -127,6 +127,28 @@ RSpec.describe GitHooks::CLI do
 
       expect { run_cli(%w[disable whitespace-check]) }.to output("Disabled: whitespace-check\n").to_stdout
       expect(installer).to have_received(:disable_whitespace_check)
+    end
+  end
+
+  describe 'enable rubocop-check' do
+    it 'enables rubocop-check and prints confirmation' do
+      installer = instance_double(GitHooks::Installer, enable: [])
+      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+      allow(installer).to receive(:enable_rubocop_check)
+
+      expect { run_cli(%w[enable rubocop-check]) }.to output("Enabled: rubocop-check\n").to_stdout
+      expect(installer).to have_received(:enable_rubocop_check)
+    end
+  end
+
+  describe 'disable rubocop-check' do
+    it 'disables rubocop-check and prints confirmation' do
+      installer = instance_double(GitHooks::Installer, disable: [])
+      allow(GitHooks::Installer).to receive(:new).and_return(installer)
+      allow(installer).to receive(:disable_rubocop_check)
+
+      expect { run_cli(%w[disable rubocop-check]) }.to output("Disabled: rubocop-check\n").to_stdout
+      expect(installer).to have_received(:disable_rubocop_check)
     end
   end
 

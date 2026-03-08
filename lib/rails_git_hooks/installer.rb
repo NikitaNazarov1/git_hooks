@@ -1,32 +1,28 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 module GitHooks
   class Installer
-    HOOKS_DIR = File.expand_path('templates', __dir__).freeze
-    # Default: Jira commit-msg + pre-commit (default-branch protection + RuboCop).
-    # Use install(*available_hooks) or pass names for more.
-    DEFAULT_HOOKS = %w[commit-msg pre-commit].freeze
-
-    def initialize(git_dir: nil, jira_project: nil)
+    def initialize(git_dir: nil)
       @git_dir = git_dir || find_git_dir
-      @jira_project = jira_project || ENV['GIT_HOOKS_JIRA_PROJECT'] || 'APD'
     end
 
     def install(*hook_names)
       target_dir = File.join(@git_dir, 'hooks')
       raise GitHooks::Error, "Not a git repository or .git/hooks not found: #{@git_dir}" unless Dir.exist?(target_dir)
 
-      hooks = hook_names.empty? ? DEFAULT_HOOKS : hook_names
+      copy_shared_files(target_dir)
+
+      hooks = hook_names.empty? ? Constants::DEFAULT_HOOKS : hook_names
       installed = []
 
       hooks.each do |name|
-        src = File.join(HOOKS_DIR, name)
+        src = File.join(Constants::HOOKS_DIR, name)
         next unless File.file?(src)
 
         dest = File.join(target_dir, name)
-        content = read_template(name)
-        content = content.gsub('JIRA_PROJECT_KEY', @jira_project) if name == 'commit-msg'
-        write_hook(dest, content)
+        write_hook(dest, read_template(name))
         make_executable(dest)
         installed << name
       end
@@ -34,14 +30,16 @@ module GitHooks
       installed
     end
 
-    def available_hooks
-      Dir.children(HOOKS_DIR).select { |f| File.file?(File.join(HOOKS_DIR, f)) }
+    def self.available_hook_names
+      Dir.children(Constants::HOOKS_DIR).select { |f| File.file?(File.join(Constants::HOOKS_DIR, f)) }
     end
 
-    DISABLED_FILE = 'rails_git_hooks_disabled'
+    def available_hooks
+      self.class.available_hook_names
+    end
 
     def disabled_file_path
-      File.join(@git_dir, DISABLED_FILE)
+      File.join(@git_dir, Constants::DISABLED_FILE)
     end
 
     def disabled_hooks
@@ -71,23 +69,50 @@ module GitHooks
       hook_names
     end
 
-    WHITESPACE_CHECK_FILE = 'rails_git_hooks_whitespace_check'
-
     def enable_whitespace_check
-      path = File.join(@git_dir, WHITESPACE_CHECK_FILE)
-      File.write(path, '')
+      enable_feature_flag('whitespace-check')
     end
 
     def disable_whitespace_check
-      path = File.join(@git_dir, WHITESPACE_CHECK_FILE)
-      FileUtils.rm_f(path)
+      disable_feature_flag('whitespace-check')
     end
 
     def whitespace_check_enabled?
-      File.exist?(File.join(@git_dir, WHITESPACE_CHECK_FILE))
+      feature_flag_enabled?('whitespace-check')
+    end
+
+    def enable_rubocop_check
+      enable_feature_flag('rubocop-check')
+    end
+
+    def disable_rubocop_check
+      disable_feature_flag('rubocop-check')
+    end
+
+    def rubocop_check_enabled?
+      feature_flag_enabled?('rubocop-check')
     end
 
     private
+
+    def enable_feature_flag(name)
+      file = Constants::FEATURE_FLAG_FILES[name]
+      return unless file
+
+      File.write(File.join(@git_dir, file), '')
+    end
+
+    def disable_feature_flag(name)
+      file = Constants::FEATURE_FLAG_FILES[name]
+      return unless file
+
+      FileUtils.rm_f(File.join(@git_dir, file))
+    end
+
+    def feature_flag_enabled?(name)
+      file = Constants::FEATURE_FLAG_FILES[name]
+      file && File.exist?(File.join(@git_dir, file))
+    end
 
     def find_git_dir
       dir = Dir.pwd
@@ -102,8 +127,21 @@ module GitHooks
       end
     end
 
+    def copy_shared_files(target_dir)
+      return unless Dir.exist?(Constants::SHARED_DIR)
+
+      Dir.glob(File.join(Constants::SHARED_DIR, '**', '*')).each do |src|
+        next unless File.file?(src)
+
+        rel = src.sub(%r{\A#{Regexp.escape(Constants::SHARED_DIR)}/}, '')
+        dest = File.join(target_dir, rel)
+        FileUtils.mkdir_p(File.dirname(dest))
+        File.write(dest, File.read(src))
+      end
+    end
+
     def read_template(name)
-      path = File.join(HOOKS_DIR, name)
+      path = File.join(Constants::HOOKS_DIR, name)
       File.read(path)
     end
 

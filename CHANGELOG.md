@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.6.1] (latest)
+## [0.7.0] (latest)
 
 ### Changed
 
-- **Default install** now installs **commit-msg** and **pre-commit** only (Jira ticket prefix + default-branch protection + RuboCop). Pre-push remains opt-in: `rails_git_hooks install pre-push`.
+- **Overcommit-style layout:** Hook templates live in `templates/hooks/` (was `lib/rails_git_hooks/templates/`). `rake sync_hooks` copies them to `hooks/` for manual install.
+- **Constants:** Extracted `lib/rails_git_hooks/constants.rb` (GEM_ROOT, HOOKS_DIR, DEFAULT_HOOKS, FEATURE_FLAG_FILES). Installer and CLI use it. Single source of truth; no config file.
+- Gemspec includes `templates/**/*`. Version set to 0.7.0.
+
+## [0.6.1]
+
+### Changed
+
+- **Default install** now installs **commit-msg** and **pre-commit** only (Jira ticket prefix + default-branch protection; RuboCop opt-in). Pre-push remains opt-in: `rails_git_hooks install pre-push`.
 - README: quick start and commands table updated for default (commit-msg + pre-commit); Jira project key / `JIRA_PROJECT_KEY` for manual install; pre-push install instruction.
 
 ## [0.6.0]

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require 'rails_git_hooks'
-require 'optparse'
 
 module GitHooks
   class CLI
+    FEATURE_FLAG_TOKENS = GitHooks::Constants::FEATURE_FLAG_FILES.keys.freeze
+
     def self.run(argv = ARGV)
       new.run(argv)
     end
@@ -33,14 +34,8 @@ module GitHooks
     private
 
     def run_install(args)
-      jira = nil
-      OptionParser.new do |opts|
-        opts.on('--jira PROJECT', 'Jira project key (e.g. APD)') { |v| jira = v }
-      end.parse!(args)
-      hooks = args
-
-      installer = Installer.new(jira_project: jira)
-      installed = installer.install(*hooks)
+      installer = Installer.new
+      installed = installer.install(*args)
       puts "Installed hooks: #{installed.join(', ')}"
     rescue GitHooks::Error => e
       warn "Error: #{e.message}"
@@ -48,44 +43,50 @@ module GitHooks
     end
 
     def run_list
-      dir = GitHooks::Installer::HOOKS_DIR
-      hooks = Dir.children(dir).select { |f| File.file?(File.join(dir, f)) }
-      puts "Available hooks: #{hooks.join(', ')}"
+      puts "Available hooks: #{Installer.available_hook_names.join(', ')}"
     end
 
-    def run_disable(args) # rubocop:disable Metrics/AbcSize
-      tokens = args.reject { |a| a.start_with?('-') }
+    def run_disable(args)
+      tokens = parse_tokens(args)
       if tokens.empty?
-        warn 'Usage: rails_git_hooks disable HOOK [HOOK...] [whitespace-check]'
+        warn 'Usage: rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check]'
         warn "Use '*' to disable all hooks."
         exit 1
       end
       installer = Installer.new
-      hook_names = tokens - ['whitespace-check']
-      installer.disable_whitespace_check if tokens.include?('whitespace-check')
+      hook_names, feature_flags = split_tokens(tokens)
+      feature_flags.each { |name| installer.public_send(:"disable_#{name.tr('-', '_')}") }
       installer.disable(*hook_names) if hook_names.any?
-      disabled = hook_names + (tokens.include?('whitespace-check') ? ['whitespace-check'] : [])
-      puts "Disabled: #{disabled.join(', ')}"
+      puts "Disabled: #{(hook_names + feature_flags).join(', ')}"
     rescue GitHooks::Error => e
       warn "Error: #{e.message}"
       exit 1
     end
 
     def run_enable(args)
-      tokens = args.reject { |a| a.start_with?('-') }
+      tokens = parse_tokens(args)
       if tokens.empty?
-        warn 'Usage: rails_git_hooks enable HOOK [HOOK...] [whitespace-check]'
+        warn 'Usage: rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check]'
         exit 1
       end
       installer = Installer.new
-      hook_names = tokens - ['whitespace-check']
-      installer.enable_whitespace_check if tokens.include?('whitespace-check')
+      hook_names, feature_flags = split_tokens(tokens)
+      feature_flags.each { |name| installer.public_send(:"enable_#{name.tr('-', '_')}") }
       installer.enable(*hook_names) if hook_names.any?
-      enabled = hook_names + (tokens.include?('whitespace-check') ? ['whitespace-check'] : [])
-      puts "Enabled: #{enabled.join(', ')}"
+      puts "Enabled: #{(hook_names + feature_flags).join(', ')}"
     rescue GitHooks::Error => e
       warn "Error: #{e.message}"
       exit 1
+    end
+
+    def parse_tokens(args)
+      args.reject { |a| a.start_with?('-') }
+    end
+
+    def split_tokens(tokens)
+      feature_flags = tokens & FEATURE_FLAG_TOKENS
+      hook_names = tokens - FEATURE_FLAG_TOKENS
+      [hook_names, feature_flags]
     end
 
     def run_disabled
@@ -106,17 +107,17 @@ module GitHooks
         rails_git_hooks - Install git hooks for Jira commit prefix and RuboCop
 
         Usage:
-          rails_git_hooks install [HOOK...] [--jira PROJECT_KEY]
-          rails_git_hooks disable HOOK [HOOK...] [whitespace-check]   (use * for all hooks)
-          rails_git_hooks enable HOOK [HOOK...] [whitespace-check]
+          rails_git_hooks install [HOOK...]
+          rails_git_hooks disable HOOK [HOOK...] [whitespace-check] [rubocop-check]   (use * for all hooks)
+          rails_git_hooks enable HOOK [HOOK...] [whitespace-check] [rubocop-check]
           rails_git_hooks disabled
           rails_git_hooks list
           rails_git_hooks --help
 
         Commands:
           install   Install hooks into current repo's .git/hooks.
-          disable   Disable hooks or whitespace-check (trailing ws/conflict markers in pre-commit).
-          enable    Re-enable disabled hooks or enable whitespace-check.
+          disable   Disable hooks or whitespace-check / rubocop-check (pre-commit options).
+          enable    Re-enable disabled hooks or enable whitespace-check / rubocop-check.
           disabled  List currently disabled hooks.
           list      List available hook names.
 
@@ -125,8 +126,9 @@ module GitHooks
           rails_git_hooks disable pre-commit
           rails_git_hooks disable *                    # disable all hooks
           rails_git_hooks enable pre-commit
-          rails_git_hooks enable whitespace-check      # reject trailing ws/conflict markers (off by default)
-          rails_git_hooks install commit-msg pre-commit --jira MYPROJ
+          rails_git_hooks enable whitespace-check      # trailing ws/conflict markers (off by default)
+          rails_git_hooks enable rubocop-check         # RuboCop on staged .rb files (off by default)
+          rails_git_hooks install commit-msg pre-commit
       HELP
     end
   end
