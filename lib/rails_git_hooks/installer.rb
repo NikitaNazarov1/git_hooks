@@ -3,6 +3,9 @@
 module GitHooks
   class Installer
     HOOKS_DIR = File.expand_path('templates', __dir__).freeze
+    # Default: Jira commit-msg + pre-commit (default-branch protection + RuboCop).
+    # Use install(*available_hooks) or pass names for more.
+    DEFAULT_HOOKS = %w[commit-msg pre-commit].freeze
 
     def initialize(git_dir: nil, jira_project: nil)
       @git_dir = git_dir || find_git_dir
@@ -13,7 +16,7 @@ module GitHooks
       target_dir = File.join(@git_dir, 'hooks')
       raise GitHooks::Error, "Not a git repository or .git/hooks not found: #{@git_dir}" unless Dir.exist?(target_dir)
 
-      hooks = hook_names.empty? ? available_hooks : hook_names
+      hooks = hook_names.empty? ? DEFAULT_HOOKS : hook_names
       installed = []
 
       hooks.each do |name|

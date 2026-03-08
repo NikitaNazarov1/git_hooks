@@ -26,12 +26,12 @@ RSpec.describe GitHooks::Installer do
   end
 
   describe '#install' do
-    it 'installs all hooks when no names given' do
+    it 'installs default hooks (commit-msg + pre-commit) when no names given' do
       installed = installer.install
-      expect(installed).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
-      expect(File).to be_executable(File.join(@hooks_dir, 'pre-commit'))
+      expect(installed).to contain_exactly('commit-msg', 'pre-commit')
       expect(File).to be_executable(File.join(@hooks_dir, 'commit-msg'))
-      expect(File).to be_executable(File.join(@hooks_dir, 'pre-push'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'pre-commit'))
+      expect(File).not_to exist(File.join(@hooks_dir, 'pre-push'))
     end
 
     it 'installs only requested hooks' do
