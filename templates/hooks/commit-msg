@@ -16,8 +16,8 @@ if File.exist?(disabled_file)
 end
 
 module RailsGitHooks
-  GIT_DIR = git_dir.freeze
 end
+RailsGitHooks.const_set(:GIT_DIR, git_dir.freeze)
 hooks_dir = File.dirname(File.expand_path(__FILE__))
 
 load File.join(hooks_dir, 'commit_msg', 'jira_prefix.rb')

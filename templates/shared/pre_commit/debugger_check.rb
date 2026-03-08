@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Prevents commits that contain debugger statements (Ruby, JavaScript/TypeScript, Python).
-# Runs by default with pre-commit. Expects RailsGitHooks::GIT_DIR to be set by the loader.
+# Warns when staged files contain debugger statements (Ruby, JavaScript/TypeScript, Python).
+# Does not block the commit. Expects RailsGitHooks::GIT_DIR to be set by the loader.
 
 # [ extension => [ [ regex, label ], ... ] ]
 DEBUGGER_PATTERNS = {
@@ -25,7 +25,7 @@ DEBUGGER_PATTERNS = {
 }.freeze
 
 staged = `git diff --cached --name-only`.split("\n").map(&:strip).reject(&:empty?)
-errors = []
+warnings = []
 
 staged.each do |path|
   next unless File.file?(path)
@@ -36,13 +36,13 @@ staged.each do |path|
 
   File.read(path).lines.each_with_index do |line, i|
     patterns.each do |regex, label|
-      errors << "#{path}:#{i + 1}: #{label}" if line.match?(regex)
+      warnings << "#{path}:#{i + 1}: #{label}" if line.match?(regex)
     end
   end
 end
 
-unless errors.empty?
-  warn 'Commit rejected (debugger check):'
-  errors.uniq.each { |e| warn "  #{e}" }
-  exit 1
+unless warnings.empty?
+  warn 'Warning (debugger check):'
+  warnings.uniq.each { |e| warn "  #{e}" }
 end
+# Does not exit 1 — commit is never blocked by this check

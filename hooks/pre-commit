@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 #
-# Blocks commits on default branch (master/main), blocks debugger statements (Ruby/JS/TS/Python).
+# Blocks commits on default branch (master/main). Warns on debugger statements (Ruby/JS/TS/Python).
 # Optionally runs RuboCop and whitespace/conflict checks.
 # Logic is in templates/shared/pre_commit/ for easier maintenance and adding new checks.
 
@@ -17,8 +17,8 @@ if File.exist?(disabled_file)
 end
 
 module RailsGitHooks
-  GIT_DIR = git_dir.freeze
 end
+RailsGitHooks.const_set(:GIT_DIR, git_dir.freeze)
 hooks_dir = File.dirname(File.expand_path(__FILE__))
 
 load File.join(hooks_dir, 'pre_commit', 'whitespace_check.rb')
