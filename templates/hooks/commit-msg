@@ -2,11 +2,10 @@
 # frozen_string_literal: true
 
 #
-# Git commit-msg hook: if branch name contains a Jira-style ticket (e.g. APD-1234, PROJ-1),
-# prepends "[TICKET] " to the commit message unless the message already starts with [PROJECT-NUM].
-# Works with any project key (2–5 letters + dash + digits); no config needed.
+# Git commit-msg hook: prepends [TICKET] when branch contains a Jira-style ticket.
+# Logic in templates/shared/commit_msg/.
 
-# Git runs hooks with CWD = repo root; find .git from here
+# Bootstrap: resolve .git dir and skip if hook is disabled
 repo_root = Dir.pwd
 git_dir = File.join(repo_root, '.git')
 git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
@@ -16,19 +15,9 @@ if File.exist?(disabled_file)
   exit 0 if disabled.include?('*') || disabled.include?('commit-msg')
 end
 
-commit_message_file = ARGV[0]
-branch_name = `git branch --no-color 2> /dev/null`[/^\* (.+)/, 1].to_s
-original_commit_message = File.read(commit_message_file).strip
-
-# Any Jira-style ticket: 2–5 letter project key + dash + digits
-branch_ticket_pattern = /([A-Z]{2,5}-\d+)/i
-skip_if_already_prefixed = /\A\[[A-Z]{2,5}-\d+\]/i
-
-if (m = branch_name.match(branch_ticket_pattern))
-  jira_ticket = m.captures.first
-
-  exit 0 if original_commit_message.match?(skip_if_already_prefixed) || original_commit_message.include?(jira_ticket)
-
-  message = "[#{jira_ticket}] #{original_commit_message}"
-  File.open(commit_message_file, 'w') { |f| f.write message }
+module RailsGitHooks
+  GIT_DIR = git_dir.freeze
 end
+hooks_dir = File.dirname(File.expand_path(__FILE__))
+
+load File.join(hooks_dir, 'commit_msg', 'jira_prefix.rb')

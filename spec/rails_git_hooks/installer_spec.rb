@@ -47,11 +47,13 @@ RSpec.describe GitHooks::Installer do
       expect(File).not_to exist(File.join(@hooks_dir, 'commit-msg'))
     end
 
-    it 'installs commit-msg with generic Jira pattern (no project key substitution)' do
+    it 'installs commit-msg and shared Jira-prefix logic in commit_msg/ subdir' do
       installer.install('commit-msg')
-      content = File.read(File.join(@hooks_dir, 'commit-msg'))
-      expect(content).to include('([A-Z]{2,5}-\\d+)')
-      expect(content).to include('skip_if_already_prefixed')
+      commit_msg_content = File.read(File.join(@hooks_dir, 'commit-msg'))
+      expect(commit_msg_content).to include("'commit_msg', 'jira_prefix.rb'")
+      jira_logic = File.read(File.join(@hooks_dir, 'commit_msg', 'jira_prefix.rb'))
+      expect(jira_logic).to include('([A-Z]{2,5}-\\d+)')
+      expect(jira_logic).to include('skip_if_already_prefixed')
     end
 
     it 'raises when hooks directory does not exist' do

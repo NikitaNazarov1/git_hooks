@@ -12,6 +12,8 @@ module GitHooks
       target_dir = File.join(@git_dir, 'hooks')
       raise GitHooks::Error, "Not a git repository or .git/hooks not found: #{@git_dir}" unless Dir.exist?(target_dir)
 
+      copy_shared_files(target_dir)
+
       hooks = hook_names.empty? ? Constants::DEFAULT_HOOKS : hook_names
       installed = []
 
@@ -122,6 +124,19 @@ module GitHooks
         raise GitHooks::Error, 'Not inside a git repository' if parent == dir
 
         dir = parent
+      end
+    end
+
+    def copy_shared_files(target_dir)
+      return unless Dir.exist?(Constants::SHARED_DIR)
+
+      Dir.glob(File.join(Constants::SHARED_DIR, '**', '*')).each do |src|
+        next unless File.file?(src)
+
+        rel = src.sub(%r{\A#{Regexp.escape(Constants::SHARED_DIR)}/}, '')
+        dest = File.join(target_dir, rel)
+        FileUtils.mkdir_p(File.dirname(dest))
+        File.write(dest, File.read(src))
       end
     end
 

@@ -5,6 +5,7 @@ module GitHooks
   module Constants
     GEM_ROOT = File.expand_path('../..', __dir__)
     HOOKS_DIR = File.expand_path('templates/hooks', GEM_ROOT).freeze
+    SHARED_DIR = File.expand_path('templates/shared', GEM_ROOT).freeze
 
     DISABLED_FILE = 'rails_git_hooks_disabled'
 

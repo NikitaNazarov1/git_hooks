@@ -2,9 +2,10 @@
 # frozen_string_literal: true
 
 #
-# Blocks commits on default branch (master/main). Optionally runs RuboCop on staged .rb files (enable with rubocop-check).
+# Blocks commits on default branch (master/main). Optionally runs RuboCop and whitespace/conflict checks.
+# Logic is in templates/shared/pre_commit/ for easier maintenance and adding new checks.
 
-# Git runs hooks with CWD = repo root; find .git from here
+# Bootstrap: resolve .git dir and skip if hook is disabled
 repo_root = Dir.pwd
 git_dir = File.join(repo_root, '.git')
 git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
@@ -14,50 +15,11 @@ if File.exist?(disabled_file)
   exit 0 if disabled.include?('*') || disabled.include?('pre-commit')
 end
 
-# Trailing whitespace / conflict markers check (disabled by default; enable with .git/rails_git_hooks_whitespace_check)
-whitespace_check_file = File.join(git_dir, 'rails_git_hooks_whitespace_check')
-if File.exist?(whitespace_check_file)
-  staged = `git diff --cached --name-only`.split("\n").map(&:strip).reject(&:empty?)
-  errors = []
-  staged.each do |path|
-    next unless File.file?(path)
-
-    File.read(path).lines.each_with_index do |line, i|
-      errors << "#{path}:#{i + 1}: trailing whitespace" if line.match?(/[ \t]\z/)
-      stripped = line.strip
-      errors << "#{path}:#{i + 1}: conflict marker" if stripped.start_with?('<<<<<<<', '=======', '>>>>>>>')
-    end
-  end
-  unless errors.empty?
-    warn 'Commit rejected (whitespace/conflict check):'
-    errors.uniq.each { |e| warn "  #{e}" }
-    exit 1
-  end
+module RailsGitHooks
+  GIT_DIR = git_dir.freeze
 end
+hooks_dir = File.dirname(File.expand_path(__FILE__))
 
-# Prevent commits on default branch (master/main)
-branch = `git rev-parse --abbrev-ref HEAD`.strip
-if %w[master main].include?(branch)
-  warn "Commits on '#{branch}' are not allowed. Create a feature branch."
-  exit 1
-end
-
-# RuboCop on staged .rb files (off by default; enable with rails_git_hooks enable rubocop-check)
-rubocop_check_file = File.join(git_dir, 'rails_git_hooks_rubocop')
-if File.exist?(rubocop_check_file)
-  require 'english'
-  require 'rubocop'
-
-  ADDED_OR_MODIFIED = /A|AM|^M/.freeze
-
-  changed_files = `git status --porcelain`.split(/\n/)
-                                          .select { |file_name_with_status| file_name_with_status =~ ADDED_OR_MODIFIED }
-                                          .map { |file_name_with_status| file_name_with_status.split(' ')[1] }
-                                          .select { |file_name| File.extname(file_name) == '.rb' }
-                                          .join(' ')
-
-  unless changed_files.empty?
-    system("rubocop #{changed_files}")
-    exit $CHILD_STATUS.to_s[-1].to_i
-  end
-end
+load File.join(hooks_dir, 'pre_commit', 'whitespace_check.rb')
+load File.join(hooks_dir, 'pre_commit', 'default_branch.rb')
+load File.join(hooks_dir, 'pre_commit', 'rubocop_check.rb')

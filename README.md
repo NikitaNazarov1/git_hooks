@@ -136,7 +136,7 @@ Runs `bundle exec rspec` before every `git push`. If the suite fails, the push i
 
 ## Manual installation (without the gem)
 
-Copy the scripts from `hooks/` into your repo’s `.git/hooks/`. The `hooks/` directory is generated from `templates/hooks/` via `rake sync_hooks` in development.
+Copy the **entire** `hooks/` directory into your repo’s `.git/hooks/` (so the hook scripts and the `pre_commit/`, `commit_msg/`, `pre_push/` subdirs are all under `.git/hooks/`). Run `rake sync_hooks` to regenerate `hooks/` from `templates/hooks/` and `templates/shared/`.
 
 | Script | Notes |
 |--------|--------|
@@ -153,7 +153,7 @@ bundle install
 bundle exec rake              # run specs
 bundle exec rake build        # build the gem
 bundle exec rake install      # install locally
-bundle exec rake sync_hooks   # copy templates/hooks → hooks/
+bundle exec rake sync_hooks   # copy templates (hooks + shared subdirs) → hooks/
 ```
 
 ---
