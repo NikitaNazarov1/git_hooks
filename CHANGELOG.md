@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.6.0] (latest)
+## [0.6.1] (latest)
+
+### Changed
+
+- **Default install** now installs **commit-msg** and **pre-commit** only (Jira ticket prefix + default-branch protection + RuboCop). Pre-push remains opt-in: `rails_git_hooks install pre-push`.
+- README: quick start and commands table updated for default (commit-msg + pre-commit); Jira project key / `JIRA_PROJECT_KEY` for manual install; pre-push install instruction.
+
+## [0.6.0]
 
 ### Added
 
