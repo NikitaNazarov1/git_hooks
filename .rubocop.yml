@@ -36,7 +36,7 @@ Metrics/BlockLength:
 # Templates and hooks/ are copied to .git/hooks and made executable at install/sync time
 Lint/ScriptPermission:
   Exclude:
-    - 'lib/rails_git_hooks/templates/*'
+    - 'templates/hooks/*'
     - 'hooks/*'
 
 # Hooks and templates are small scripts; avoid style churn
