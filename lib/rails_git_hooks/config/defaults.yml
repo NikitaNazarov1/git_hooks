@@ -112,7 +112,7 @@ CommitMsg:
 
 PrePush:
   RunTests:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -121,6 +121,7 @@ PrePush:
     exclude: []
     dependencies:
       executables: [bundle]
+      libraries: [rspec]
     command: [bundle, exec, rspec]
     description: Run test suite before push
     file_based: false

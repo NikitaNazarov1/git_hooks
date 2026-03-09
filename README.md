@@ -4,44 +4,48 @@
 [![Build Status](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/tests.yml?query=branch%3Amain)
 [![RuboCop](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml/badge.svg?branch=main)](https://github.com/NikitaNazarov1/rails_git_hooks/actions/workflows/rubocop.yml?query=branch%3Amain)
 
-Git hooks for Rails and Ruby projects with built-in defaults, optional sparse overrides, and Overcommit-style per-check policies.
+Git hooks for Rails and Ruby projects: sensible defaults out of the box, optional YAML overrides, and per-check policies (enable/disable, fail vs warn, include/exclude).
 
-## What changed
+## Features
 
-The project now uses a **code-first hook runtime**:
+- **Code-first runtime** — Checks are Ruby classes; hook scripts are thin bootstraps that delegate to a shared runtime.
+- **Sparse config** — Defaults live in the gem ([`config/defaults.yml`](https://github.com/NikitaNazarov1/rails_git_hooks/blob/main/lib/rails_git_hooks/config/defaults.yml)); you only add overrides in `.rails_git_hooks.yml` (and optionally `.rails_git_hooks.local.yml` for personal tweaks).
+- **Flexible configuration options** — Per check: `enabled`, `quiet`, `on_fail`, `on_warn`, `on_missing_dependency`, `include`, `exclude`, `command`.
+- **Dependency handling** — Checks declare executables/libraries; missing deps are handled by a single policy (`on_missing_dependency`).
 
-- checks declare their defaults in Ruby
-- hook scripts are thin bootstraps
-- `.rails_git_hooks.yml` is optional and contains only overrides
-- checks can be configured with `enabled`, `quiet`, `on_fail`, `on_warn`, `on_missing_dependency`, `include`, and `exclude`
+## Included hooks and checks
 
-## Included hooks
+| Hook         | Check key            | Enabled By Default | Description |
+|-------------|----------------------|---------|-------------|
+| **commit-msg** | `jira-prefix`        | ✅      | Prefix commit messages with Jira-style ticket IDs from the branch name (e.g. `[TICKET-123]`). |
+| **pre-commit** | `default-branch`     | ✅      | Block commits on `master` / `main`; prompt to use a feature branch. |
+| **pre-commit** | `debugger-check`     | ✅      | Warn (or fail) on debugger statements in Ruby, JavaScript/TypeScript, and Python. |
+| **pre-commit** | `yaml-format-check`  | ✅      | Warn on invalid `.yml` / `.yaml` files. |
+| **pre-commit** | `json-format-check`  | ✅      | Warn on invalid `.json` files. |
+| **pre-commit** | `migrations-check`   | ✅      | Warn when migration files are staged but schema/data_schema files are not. |
+| **pre-commit** | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
+| **pre-commit** | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
+| **pre-push**   | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
 
-| Git hook | Purpose |
-|---|---|
-| `commit-msg` | Prefix commit messages with Jira-style ticket IDs from the current branch |
-| `pre-commit` | Run commit-time checks like branch protection, debugger detection, format validation, and optional code quality checks |
-| `pre-push` | Run the test suite before push |
+`install` installs every hook that has at least one **enabled** check in the merged config (defaults + `.rails_git_hooks.yml` + `.rails_git_hooks.local.yml`). With no config file, only **commit-msg** and **pre-commit** are installed (run-tests is off by default). Enable checks in `.rails_git_hooks.yml` (e.g. pre-push’s `run-tests`) and run `install` again to add more hooks.
 
 ## Quick start
 
-### 1. Install the gem
+### 1. Add the gem
 
-```bash
-gem install rails_git_hooks
-```
-
-Or add it to your `Gemfile`:
+**Gemfile:**
 
 ```ruby
 gem "rails_git_hooks"
 ```
 
-Then install dependencies:
+Then:
 
 ```bash
 bundle install
 ```
+
+Or install globally: `gem install rails_git_hooks`.
 
 ### 2. Install hooks
 
@@ -51,55 +55,29 @@ From your project root:
 bundle exec rails_git_hooks install
 ```
 
-This installs `commit-msg` and `pre-commit` by default.
+With default config this installs **commit-msg** and **pre-commit** into `.git/hooks/` and copies the runtime there (pre-push is off by default; enable `run-tests` in config to add it).
 
-### 3. Inspect available checks
+### 3. Override defaults (optional)
 
-```bash
-bundle exec rails_git_hooks list
-```
+No config file is required; defaults work as-is. To change behavior, edit `.rails_git_hooks.yml` (create it with `bundle exec rails_git_hooks init` if needed). Same structure as the example under [Configuration](#configuration).
 
-### 4. Override behavior only when needed
+## Configuration
 
-Enable RuboCop:
+### Priority (low → high)
 
-```bash
-bundle exec rails_git_hooks enable rubocop-check
-```
+1. **Built-in defaults** (in the gem’s `config/defaults.yml`)
+2. **`.rails_git_hooks.yml`** in the repo root (sparse overrides; commit this)
+3. **`.rails_git_hooks.local.yml`** in the repo root (optional; overrides the above, typically gitignored)
 
-Make debugger statements fail instead of warn:
-
-```bash
-bundle exec rails_git_hooks set debugger-check on_fail fail
-```
-
-Disable migrations warnings:
-
-```bash
-bundle exec rails_git_hooks disable migrations-check
-```
-
-Show effective config:
-
-```bash
-bundle exec rails_git_hooks show-config
-```
-
-## Config model
-
-You do **not** need a config file for the defaults to work.
-
-If you want overrides, create one:
+**Create the main override file:**
 
 ```bash
 bundle exec rails_git_hooks init
 ```
 
-This creates `.rails_git_hooks.yml`. The file is sparse: only your changes are stored there.
+**Optional:** Create `.rails_git_hooks.local.yml` in the repo root for personal overrides (merged on top of `.rails_git_hooks.yml`). Add it to `.gitignore` if you don’t want to commit it.
 
-Optional: create `.rails_git_hooks.local.yml` in the repo root for personal overrides; it is merged on top of `.rails_git_hooks.yml` (local wins). Add it to `.gitignore` if you don’t want to commit it.
-
-Example:
+### Example override file
 
 ```yaml
 PreCommit:
@@ -116,116 +94,29 @@ PreCommit:
       - "db/schema.rb"
 ```
 
-### Supported per-check options
+### Per-check options
 
-| Option | Meaning |
-|---|---|
-| `enabled` | Enable or disable a check |
-| `quiet` | Hide normal output unless the check warns or fails |
-| `on_fail` | Map a check failure to `fail`, `warn`, or `pass` |
-| `on_warn` | Map a warning to `warn`, `fail`, or `pass` |
-| `on_missing_dependency` | Control behavior when required tools/libraries are missing |
-| `include` | File paths or glob patterns that the check should apply to |
-| `exclude` | File paths or glob patterns to remove from the included set |
-| `command` | Override the command used by command-based checks |
-
-## Dependency model
-
-Checks can declare dependencies such as:
-
-- executables like `bundle`
-- Ruby libraries like `rubocop`
-- required files
-
-If a dependency is missing, the runner produces a structured result and applies the check’s `on_missing_dependency` policy. This makes missing-tool behavior consistent across all checks.
-
-## Default checks
-
-### `commit-msg`
-
-- `jira-prefix`
-  - enabled by default
-  - prefixes commit messages with `[TICKET-123]` when the branch name contains a Jira-style ticket ID
-
-### `pre-commit`
-
-- `default-branch`
-  - enabled by default
-  - fails on `master` / `main`
-
-- `debugger-check`
-  - enabled by default
-  - warns on debugger statements in Ruby, JavaScript/TypeScript, and Python
-
-- `yaml-format-check`
-  - enabled by default
-  - warns on invalid `.yml` / `.yaml`
-
-- `json-format-check`
-  - enabled by default
-  - warns on invalid `.json`
-
-- `migrations-check`
-  - enabled by default
-  - warns when schema/data schema files appear to be missing after migrations
-
-- `whitespace-check`
-  - disabled by default
-  - fails on trailing whitespace and merge conflict markers
-
-- `rubocop-check`
-  - disabled by default
-  - runs RuboCop on staged Ruby files
-  - default dependency behavior warns if `rubocop` is missing
-
-### `pre-push`
-
-- `run-tests`
-  - enabled by default when `pre-push` is installed
-  - runs `bundle exec rspec`
+| Option | Description |
+|--------|--------------|
+| `enabled` | Turn the check on or off. |
+| `quiet` | Suppress normal output unless the check warns or fails. |
+| `on_fail` | `fail`, `warn`, or `pass` when the check fails. |
+| `on_warn` | `warn`, `fail`, or `pass` when the check would warn. |
+| `on_missing_dependency` | Behavior when a required executable/library is missing. |
+| `include` | Glob patterns for files the check applies to. |
+| `exclude` | Glob patterns to exclude from `include`. |
+| `command` | Override the command for checks that run external commands. |
 
 ## CLI reference
 
 | Command | Description |
-|---|---|
-| `rails_git_hooks install [HOOK...]` | Install hook scripts into `.git/hooks` |
-| `rails_git_hooks list` | List available git hooks and check keys |
-| `rails_git_hooks init` | Create `.rails_git_hooks.yml` |
-| `rails_git_hooks enable CHECK_NAME` | Set `enabled: true` for a check override |
-| `rails_git_hooks disable CHECK_NAME` | Set `enabled: false` for a check override |
-| `rails_git_hooks set CHECK_NAME OPTION VALUE` | Set a single override option |
-| `rails_git_hooks show-config` | Print effective merged configuration |
+|---------|--------------|
+| `rails_git_hooks install` | Install hooks that have at least one enabled check in the merged config (defaults + .rails_git_hooks.yml + .rails_git_hooks.local.yml). |
+| `rails_git_hooks init` | Create an empty `.rails_git_hooks.yml`. |
 
-Examples:
+## Contributing
 
-```bash
-rails_git_hooks install
-rails_git_hooks install pre-push
-rails_git_hooks enable rubocop-check
-rails_git_hooks disable migrations-check
-rails_git_hooks set debugger-check on_fail fail
-rails_git_hooks set rubocop-check quiet true
-rails_git_hooks show-config
-```
-
-## Manual installation
-
-From your project (with the gem in the Gemfile or installed), run:
-
-```bash
-bundle exec rails_git_hooks install
-```
-
-This installs the thin hook bootstraps and the embedded `rails_git_hooks` runtime into `.git/hooks/`.
-
-## Development
-
-```bash
-bundle install
-bundle exec rake              # run specs
-bundle exec rake build        # build the gem
-bundle exec rake install      # install locally
-```
+Contributions are welcome. Open an [issue](https://github.com/NikitaNazarov1/rails_git_hooks/issues) for bugs or ideas, or submit a pull request.
 
 ## License
 

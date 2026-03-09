@@ -17,5 +17,8 @@ module GitHooks
       commit_msg: 'CommitMsg',
       pre_push: 'PrePush'
     }.freeze
+
+    # Section name (from YAML) -> hook script name (e.g. for install)
+    SECTION_TO_HOOK = HOOK_CONFIG_NAMES.invert.transform_values { |sym| sym.to_s.tr('_', '-') }.freeze
   end
 end

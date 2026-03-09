@@ -58,7 +58,7 @@ DEPENDENCIES
   rails_git_hooks!
   rake (~> 13.0)
   rspec (~> 3.0)
-  rubocop (~> 1.0)
+  rubocop (>= 1.0, < 1.72)
 
 BUNDLED WITH
    2.7.2
