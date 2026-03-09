@@ -9,7 +9,7 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 ## Features
 
 - **Code-first runtime** — Checks are Ruby classes; hook scripts are thin bootstraps that delegate to a shared runtime.
-- **Sparse config** — Defaults live in the gem ([`config/defaults.yml`](https://github.com/NikitaNazarov1/rails_git_hooks/blob/main/lib/rails_git_hooks/config/defaults.yml)); you only add overrides in `.rails_git_hooks.yml` (and optionally `.rails_git_hooks.local.yml` for personal tweaks).
+- **Sparse config** — Defaults live in the gem ([config/defaults.yml](https://github.com/NikitaNazarov1/rails_git_hooks/blob/main/lib/rails_git_hooks/config/defaults.yml)). But you can redefine them via your own yml config file in a root repository.
 - **Flexible configuration options** — Per check: `enabled`, `quiet`, `on_fail`, `on_warn`, `on_missing_dependency`, `include`, `exclude`, `command`.
 - **Dependency handling** — Checks declare executables/libraries; missing deps are handled by a single policy (`on_missing_dependency`).
 
@@ -26,14 +26,10 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 | **pre-commit** | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
 | **pre-commit** | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
 | **pre-push**   | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
-| **post-checkout** | `bundle-install`   | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
-| **post-checkout** | `db-migrate`       | Off     | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
-| **post-merge** | `bundle-install`     | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a merge. |
-| **post-merge** | `db-migrate`        | Off     | Run `rails db:migrate` when migrations or schema changed after a merge. |
-
-These post-checkout and post-merge checks (inspired by [hookup](https://rubygems.org/gems/hookup)) keep your app bundled and migrated when switching branches or pulling changes. Enable any of them in config to have that hook installed.
-
-`install` installs every hook that has at least one **enabled** check in the merged config (defaults + `.rails_git_hooks.yml` + `.rails_git_hooks.local.yml`). With no config file, only **commit-msg** and **pre-commit** are installed (run-tests is off by default). Enable checks in `.rails_git_hooks.yml` (e.g. pre-push’s `run-tests`) and run `install` again to add more hooks.
+| **post-checkout** | `bundle-install`   | ✅      | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
+| **post-checkout** | `db-migrate`       | ✅      | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
+| **post-merge** | `bundle-install`     | ✅      | Run `bundle install` when Gemfile or Gemfile.lock changed after a merge. |
+| **post-merge** | `db-migrate`        | ✅      | Run `rails db:migrate` when migrations or schema changed after a merge. |
 
 ## Quick start
 
@@ -61,11 +57,7 @@ From your project root:
 bundle exec rails_git_hooks install
 ```
 
-With default config this installs **commit-msg** and **pre-commit** into `.git/hooks/` and copies the runtime there (pre-push is off by default; enable `run-tests` in config to add it).
-
-### 3. Override defaults (optional)
-
-No config file is required; defaults work as-is. To change behavior, edit `.rails_git_hooks.yml` (create it with `bundle exec rails_git_hooks init` if needed). Same structure as the example under [Configuration](#configuration).
+With default config this installs **commit-msg**, **pre-commit**, **post-checkout**, and **post-merge** into `.git/hooks/` and copies the runtime there (pre-push is off by default; enable `run-tests` in config to add it).
 
 ## Configuration
 

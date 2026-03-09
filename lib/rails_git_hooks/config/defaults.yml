@@ -129,7 +129,7 @@ PrePush:
 
 PostCheckout:
   BundleInstall:
-    enabled: false
+    enabled: true
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -144,7 +144,7 @@ PostCheckout:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: false
+    enabled: true
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -160,7 +160,7 @@ PostCheckout:
 
 PostMerge:
   BundleInstall:
-    enabled: false
+    enabled: true
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -175,7 +175,7 @@ PostMerge:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: false
+    enabled: true
     quiet: false
     on_fail: fail
     on_warn: warn

@@ -35,9 +35,11 @@ RSpec.describe GitHooks::Installer do
     it 'installs hooks that have enabled checks in merged config (defaults when no yml)' do
       installed = installer.install
 
-      expect(installed).to contain_exactly('commit-msg', 'pre-commit')
+      expect(installed).to contain_exactly('commit-msg', 'post-checkout', 'post-merge', 'pre-commit')
       expect(File).to be_executable(File.join(@hooks_dir, 'commit-msg'))
       expect(File).to be_executable(File.join(@hooks_dir, 'pre-commit'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'post-checkout'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'post-merge'))
       expect(File).not_to exist(File.join(@hooks_dir, 'pre-push'))
       expect(File).to exist(File.join(@hooks_dir, 'rails_git_hooks', 'runtime.rb'))
       expect(File).to exist(File.join(@hooks_dir, 'rails_git_hooks', 'checks', 'pre_commit.rb'))
