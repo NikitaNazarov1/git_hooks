@@ -22,7 +22,6 @@ module GitHooks
 
       hooks = hooks_enabled_in_config.select { |name| self.class.available_hook_names.include?(name) }
       hooks.each_with_object([]) do |name, installed|
-
         dest = File.join(target_dir, name)
         File.write(dest, File.read(File.join(Constants::HOOKS_DIR, name)))
         File.chmod(0o755, dest)
@@ -41,7 +40,7 @@ module GitHooks
     private
 
     def repo_for_config
-      @repo ||= begin
+      @repo_for_config ||= begin
         root = File.dirname(@git_dir)
         Struct.new(:root, :config_path, :local_config_path).new(
           root,
