@@ -3,8 +3,6 @@
 AllCops:
   NewCops: enable
   UseCache: false
-  Exclude:
-    - 'hooks/rails_git_hooks/**/*'
 
 Layout/LineLength:
   Max: 125
