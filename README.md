@@ -26,6 +26,12 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 | **pre-commit** | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
 | **pre-commit** | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
 | **pre-push**   | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
+| **post-checkout** | `bundle-install`   | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
+| **post-checkout** | `db-migrate`       | Off     | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
+| **post-merge** | `bundle-install`     | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a merge. |
+| **post-merge** | `db-migrate`        | Off     | Run `rails db:migrate` when migrations or schema changed after a merge. |
+
+These post-checkout and post-merge checks (inspired by [hookup](https://rubygems.org/gems/hookup)) keep your app bundled and migrated when switching branches or pulling changes. Enable any of them in config to have that hook installed.
 
 `install` installs every hook that has at least one **enabled** check in the merged config (defaults + `.rails_git_hooks.yml` + `.rails_git_hooks.local.yml`). With no config file, only **commit-msg** and **pre-commit** are installed (run-tests is off by default). Enable checks in `.rails_git_hooks.yml` (e.g. pre-push’s `run-tests`) and run `install` again to add more hooks.
 

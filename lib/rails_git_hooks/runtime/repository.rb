@@ -42,6 +42,10 @@ module GitHooks
       git_output('diff', '--cached', '--name-only').split("\n").map(&:strip).reject(&:empty?)
     end
 
+    def changed_files(ref1, ref2)
+      git_output('diff', '--name-only', ref1.to_s, ref2.to_s).split("\n").map(&:strip).reject(&:empty?)
+    end
+
     private
 
     def resolve_paths(start_dir)

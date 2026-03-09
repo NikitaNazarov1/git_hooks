@@ -15,7 +15,9 @@ module GitHooks
     HOOK_CONFIG_NAMES = {
       pre_commit: 'PreCommit',
       commit_msg: 'CommitMsg',
-      pre_push: 'PrePush'
+      pre_push: 'PrePush',
+      post_checkout: 'PostCheckout',
+      post_merge: 'PostMerge'
     }.freeze
 
     # Section name (from YAML) -> hook script name (e.g. for install)

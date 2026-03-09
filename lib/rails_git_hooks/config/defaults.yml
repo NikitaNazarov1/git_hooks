@@ -126,3 +126,65 @@ PrePush:
     description: Run test suite before push
     file_based: false
     install_hint: Install test dependencies and ensure `bundle exec rspec` runs successfully
+
+PostCheckout:
+  BundleInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [Gemfile, Gemfile.lock]
+    exclude: []
+    dependencies:
+      executables: [bundle]
+    command: [bundle, install]
+    description: Run bundle install when Gemfile or Gemfile.lock changed (branch checkout)
+    file_based: true
+    install_hint: Ensure bundle is available
+
+  DbMigrate:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [db/migrate/*.rb, db/schema.rb, db/structure.sql]
+    exclude: []
+    dependencies:
+      executables: [bundle]
+    command: [bundle, exec, rails, db:migrate]
+    description: Run db:migrate when migrations or schema changed (branch checkout)
+    file_based: true
+    install_hint: Rails app with db:migrate (or override command in config)
+
+PostMerge:
+  BundleInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [Gemfile, Gemfile.lock]
+    exclude: []
+    dependencies:
+      executables: [bundle]
+    command: [bundle, install]
+    description: Run bundle install when Gemfile or Gemfile.lock changed (after merge)
+    file_based: true
+    install_hint: Ensure bundle is available
+
+  DbMigrate:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [db/migrate/*.rb, db/schema.rb, db/structure.sql]
+    exclude: []
+    dependencies:
+      executables: [bundle]
+    command: [bundle, exec, rails, db:migrate]
+    description: Run db:migrate when migrations or schema changed (after merge)
+    file_based: true
+    install_hint: Rails app with db:migrate (or override command in config)

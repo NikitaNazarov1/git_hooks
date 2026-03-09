@@ -19,7 +19,9 @@ RSpec.describe GitHooks::Installer do
 
   describe '.available_hook_names' do
     it 'returns hook names from templates directory' do
-      expect(described_class.available_hook_names).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
+      expect(described_class.available_hook_names).to contain_exactly(
+        'commit-msg', 'post-checkout', 'post-merge', 'pre-commit', 'pre-push'
+      )
     end
   end
 
