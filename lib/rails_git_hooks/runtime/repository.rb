@@ -14,6 +14,10 @@ module GitHooks
       File.join(root, Constants::CONFIG_FILE)
     end
 
+    def local_config_path
+      File.join(root, Constants::CONFIG_FILE_LOCAL)
+    end
+
     def hook_runtime_dir(hooks_dir)
       File.join(hooks_dir, Constants::RUNTIME_DIR_NAME)
     end
@@ -36,6 +40,10 @@ module GitHooks
 
     def staged_files
       git_output('diff', '--cached', '--name-only').split("\n").map(&:strip).reject(&:empty?)
+    end
+
+    def changed_files(ref1, ref2)
+      git_output('diff', '--name-only', ref1.to_s, ref2.to_s).split("\n").map(&:strip).reject(&:empty?)
     end
 
     private

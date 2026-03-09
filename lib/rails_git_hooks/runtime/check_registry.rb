@@ -11,7 +11,11 @@ module GitHooks
       Checks::PreCommit::WhitespaceCheck,
       Checks::PreCommit::RuboCop,
       Checks::CommitMsg::JiraPrefix,
-      Checks::PrePush::RunTests
+      Checks::PrePush::RunTests,
+      Checks::PostCheckout::BundleInstall,
+      Checks::PostCheckout::DbMigrate,
+      Checks::PostMerge::BundleInstall,
+      Checks::PostMerge::DbMigrate
     ].freeze
 
     def self.all

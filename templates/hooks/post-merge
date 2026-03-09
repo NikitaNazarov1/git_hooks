@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+hooks_dir = File.dirname(File.expand_path(__FILE__))
+begin
+  require 'bundler/setup'
+rescue LoadError, StandardError
+  nil
+end
+
+require File.join(hooks_dir, 'rails_git_hooks', 'runtime')
+
+exit GitHooks::Runtime.execute(:post_merge, argv: ARGV, stdin: $stdin.read)

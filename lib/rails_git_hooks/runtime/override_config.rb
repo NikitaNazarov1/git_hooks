@@ -15,9 +15,9 @@ module GitHooks
     end
 
     def load
-      return {} unless File.exist?(@repo.config_path)
-
-      deep_stringify(YAML.safe_load(File.read(@repo.config_path), aliases: true) || {})
+      main = load_file(@repo.config_path)
+      local = load_file(@repo.local_config_path)
+      deep_merge(main, local)
     end
 
     def config_for(definition)
@@ -35,7 +35,7 @@ module GitHooks
     end
 
     def set_option(definition, option, value)
-      data = load
+      data = load_file(@repo.config_path)
       section = data[definition.hook_section] ||= {}
       section[definition.config_name] ||= {}
 
@@ -68,6 +68,12 @@ module GitHooks
     end
 
     private
+
+    def load_file(path)
+      return {} unless File.exist?(path)
+
+      deep_stringify(YAML.safe_load(File.read(path), aliases: true) || {})
+    end
 
     def write(data)
       if data.empty?

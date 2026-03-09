@@ -19,7 +19,9 @@ RSpec.describe GitHooks::Installer do
 
   describe '.available_hook_names' do
     it 'returns hook names from templates directory' do
-      expect(described_class.available_hook_names).to contain_exactly('commit-msg', 'pre-commit', 'pre-push')
+      expect(described_class.available_hook_names).to contain_exactly(
+        'commit-msg', 'post-checkout', 'post-merge', 'pre-commit', 'pre-push'
+      )
     end
   end
 
@@ -30,27 +32,21 @@ RSpec.describe GitHooks::Installer do
   end
 
   describe '#install' do
-    it 'installs default hooks and runtime when no names given' do
+    it 'installs hooks that have enabled checks in merged config (defaults when no yml)' do
       installed = installer.install
 
-      expect(installed).to contain_exactly('commit-msg', 'pre-commit')
+      expect(installed).to contain_exactly('commit-msg', 'post-checkout', 'post-merge', 'pre-commit')
       expect(File).to be_executable(File.join(@hooks_dir, 'commit-msg'))
       expect(File).to be_executable(File.join(@hooks_dir, 'pre-commit'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'post-checkout'))
+      expect(File).to be_executable(File.join(@hooks_dir, 'post-merge'))
       expect(File).not_to exist(File.join(@hooks_dir, 'pre-push'))
       expect(File).to exist(File.join(@hooks_dir, 'rails_git_hooks', 'runtime.rb'))
       expect(File).to exist(File.join(@hooks_dir, 'rails_git_hooks', 'checks', 'pre_commit.rb'))
     end
 
-    it 'installs only requested hooks' do
-      installed = installer.install('pre-commit')
-
-      expect(installed).to eq(['pre-commit'])
-      expect(File).to exist(File.join(@hooks_dir, 'pre-commit'))
-      expect(File).not_to exist(File.join(@hooks_dir, 'commit-msg'))
-    end
-
     it 'writes thin hook bootstrap scripts' do
-      installer.install('commit-msg')
+      installer.install
 
       content = File.read(File.join(@hooks_dir, 'commit-msg'))
       expect(content).to include("require File.join(hooks_dir, 'rails_git_hooks', 'runtime')")
@@ -62,9 +58,18 @@ RSpec.describe GitHooks::Installer do
       expect { bad_installer.install }.to raise_error(GitHooks::Error, /Not a git repository/)
     end
 
-    it 'skips unknown hook names' do
-      installed = installer.install('pre-commit', 'nonexistent-hook')
-      expect(installed).to eq(['pre-commit'])
+    it 'installs hooks that have enabled checks in config (e.g. pre-push when RunTests enabled)' do
+      root = File.dirname(@git_dir)
+      File.write(File.join(root, '.rails_git_hooks.yml'), <<~YAML)
+        PrePush:
+          RunTests:
+            enabled: true
+      YAML
+
+      installed = installer.install
+
+      expect(installed).to include('pre-push')
+      expect(File).to exist(File.join(@hooks_dir, 'pre-push'))
     end
   end
 end

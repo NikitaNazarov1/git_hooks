@@ -8,13 +8,19 @@ module GitHooks
     RUNTIME_SOURCE_DIR = File.expand_path('lib/rails_git_hooks', GEM_ROOT).freeze
     RUNTIME_DIR_NAME = 'rails_git_hooks'
     CONFIG_FILE = '.rails_git_hooks.yml'
+    CONFIG_FILE_LOCAL = '.rails_git_hooks.local.yml'
 
     # Default hooks when install is run with no arguments.
     DEFAULT_HOOKS = %w[commit-msg pre-commit].freeze
     HOOK_CONFIG_NAMES = {
       pre_commit: 'PreCommit',
       commit_msg: 'CommitMsg',
-      pre_push: 'PrePush'
+      pre_push: 'PrePush',
+      post_checkout: 'PostCheckout',
+      post_merge: 'PostMerge'
     }.freeze
+
+    # Section name (from YAML) -> hook script name (e.g. for install)
+    SECTION_TO_HOOK = HOOK_CONFIG_NAMES.invert.transform_values { |sym| sym.to_s.tr('_', '-') }.freeze
   end
 end

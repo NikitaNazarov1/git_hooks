@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.7.2]
+
+### Added
+
+- **post-checkout hook** — Runs after branch checkout. Includes `bundle-install` (run `bundle install` when Gemfile/Gemfile.lock changed) and `db-migrate` (run `rails db:migrate` when migrations or schema changed). Both enabled by default.
+- **post-merge hook** — Runs after merge. Same checks as post-checkout: `bundle-install` and `db-migrate`, enabled by default. Keeps the app bundled and migrated when pulling or merging (inspired by [hookup](https://rubygems.org/gems/hookup)).
+- **Shared check modules** — `checks/shared/bundle_install_check.rb` and `checks/shared/db_migrate_check.rb` hold common logic and options for the post-checkout and post-merge bundle/migrate checks.
+- **Specs for every check** — RSpec examples for all 13 checks (pre-commit, commit-msg, pre-push, post-checkout, post-merge) under `spec/rails_git_hooks/checks/`.
+
+### Changed
+
+- **Default install** — With no config file, `install` now installs **commit-msg**, **pre-commit**, **post-checkout**, and **post-merge** (post-checkout/post-merge bundle and db-migrate checks are on by default).
+- **Runner** — `modified_files` now supports `post_checkout` (files changed between refs on branch checkout) and `post_merge` (files changed between ORIG_HEAD and HEAD). Repository adds `changed_files(ref1, ref2)`.
+- **defaults.yml** — PostCheckout and PostMerge sections: `BundleInstall` and `DbMigrate` set to `enabled: true` by default.
+
 ## [0.7.1]
 
 ### Added
