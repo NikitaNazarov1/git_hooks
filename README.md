@@ -97,6 +97,8 @@ bundle exec rails_git_hooks init
 
 This creates `.rails_git_hooks.yml`. The file is sparse: only your changes are stored there.
 
+Optional: create `.rails_git_hooks.local.yml` in the repo root for personal overrides; it is merged on top of `.rails_git_hooks.yml` (local wins). Add it to `.gitignore` if you don’t want to commit it.
+
 Example:
 
 ```yaml

@@ -14,6 +14,10 @@ module GitHooks
       File.join(root, Constants::CONFIG_FILE)
     end
 
+    def local_config_path
+      File.join(root, Constants::CONFIG_FILE_LOCAL)
+    end
+
     def hook_runtime_dir(hooks_dir)
       File.join(hooks_dir, Constants::RUNTIME_DIR_NAME)
     end

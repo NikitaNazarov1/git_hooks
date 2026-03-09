@@ -8,6 +8,7 @@ module GitHooks
     RUNTIME_SOURCE_DIR = File.expand_path('lib/rails_git_hooks', GEM_ROOT).freeze
     RUNTIME_DIR_NAME = 'rails_git_hooks'
     CONFIG_FILE = '.rails_git_hooks.yml'
+    CONFIG_FILE_LOCAL = '.rails_git_hooks.local.yml'
 
     # Default hooks when install is run with no arguments.
     DEFAULT_HOOKS = %w[commit-msg pre-commit].freeze

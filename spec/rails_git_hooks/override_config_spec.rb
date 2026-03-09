@@ -7,7 +7,11 @@ require 'tmpdir'
 RSpec.describe GitHooks::OverrideConfig do
   around do |example|
     Dir.mktmpdir('rails_git_hooks_config_spec') do |tmpdir|
-      @repo = Struct.new(:root, :config_path).new(tmpdir, File.join(tmpdir, '.rails_git_hooks.yml'))
+      @repo = Struct.new(:root, :config_path, :local_config_path).new(
+        tmpdir,
+        File.join(tmpdir, '.rails_git_hooks.yml'),
+        File.join(tmpdir, '.rails_git_hooks.local.yml')
+      )
       example.run
     end
   end
@@ -30,6 +34,25 @@ RSpec.describe GitHooks::OverrideConfig do
       expect(result['enabled']).to eq(true)
       expect(result['quiet']).to eq(true)
       expect(result['on_fail']).to eq('fail')
+    end
+
+    it 'merges local config on top of main config (local wins)' do
+      File.write(@repo.config_path, <<~YAML)
+        PreCommit:
+          RuboCop:
+            enabled: true
+      YAML
+      File.write(@repo.local_config_path, <<~YAML)
+        PreCommit:
+          RuboCop:
+            enabled: false
+            quiet: false
+      YAML
+
+      result = config.config_for(rubocop)
+
+      expect(result['enabled']).to eq(false)
+      expect(result['quiet']).to eq(false)
     end
   end
 
