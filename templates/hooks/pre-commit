@@ -1,27 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-#
-# Blocks commits on default branch (master/main). Warns on debugger statements (Ruby/JS/TS/Python).
-# Optionally runs RuboCop and whitespace/conflict checks.
-# Logic is in templates/shared/pre_commit/ for easier maintenance and adding new checks.
-
-# Bootstrap: resolve .git dir and skip if hook is disabled
-repo_root = Dir.pwd
-git_dir = File.join(repo_root, '.git')
-git_dir = File.expand_path(File.read(git_dir).strip.sub(/\Agitdir: \s*/, ''), repo_root) if File.file?(git_dir)
-disabled_file = File.join(git_dir, 'rails_git_hooks_disabled')
-if File.exist?(disabled_file)
-  disabled = File.read(disabled_file).split("\n").map(&:strip)
-  exit 0 if disabled.include?('*') || disabled.include?('pre-commit')
-end
-
-module RailsGitHooks
-end
-RailsGitHooks.const_set(:GIT_DIR, git_dir.freeze)
 hooks_dir = File.dirname(File.expand_path(__FILE__))
+begin
+  require 'bundler/setup'
+rescue LoadError, StandardError
+  nil
+end
 
-load File.join(hooks_dir, 'pre_commit', 'whitespace_check.rb')
-load File.join(hooks_dir, 'pre_commit', 'default_branch.rb')
-load File.join(hooks_dir, 'pre_commit', 'debugger_check.rb')
-load File.join(hooks_dir, 'pre_commit', 'rubocop_check.rb')
+require File.join(hooks_dir, 'rails_git_hooks', 'runtime')
+
+exit GitHooks::Runtime.execute(:pre_commit, argv: ARGV, stdin: $stdin.read)

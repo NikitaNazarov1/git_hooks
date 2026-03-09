@@ -1,0 +1,127 @@
+# Default config for each check. Overrides live in .rails_git_hooks.yml (sparse).
+# Structure matches .rails_git_hooks.yml: hook section -> check config_name -> options.
+
+PreCommit:
+  DefaultBranch:
+    enabled: true
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Prevent commits on default branch
+    file_based: false
+
+  DebuggerCheck:
+    enabled: true
+    quiet: false
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Warn on debugger statements
+    file_based: true
+
+  YAMLFormatCheck:
+    enabled: true
+    quiet: false
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Warn on invalid YAML
+    file_based: true
+
+  JSONFormatCheck:
+    enabled: true
+    quiet: false
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Warn on invalid JSON
+    file_based: true
+
+  MigrationsCheck:
+    enabled: true
+    quiet: false
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Warn on missing schema files after migrations
+    file_based: true
+
+  WhitespaceCheck:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Reject trailing whitespace and conflict markers
+    file_based: true
+
+  RuboCop:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [rubocop]
+    command: [bundle, exec, rubocop]
+    description: Run RuboCop on staged Ruby files
+    file_based: true
+    install_hint: Add `gem "rubocop"` to your Gemfile and run bundle install
+
+CommitMsg:
+  JiraPrefix:
+    enabled: true
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Prefix commit messages with ticket id from branch
+    file_based: false
+
+PrePush:
+  RunTests:
+    enabled: true
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+    command: [bundle, exec, rspec]
+    description: Run test suite before push
+    file_based: false
+    install_hint: Install test dependencies and ensure `bundle exec rspec` runs successfully

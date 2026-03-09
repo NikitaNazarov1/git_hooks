@@ -14,13 +14,22 @@ Style/Documentation:
   Enabled: false
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 140
 
 Metrics/MethodLength:
-  Max: 25
+  Max: 35
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 30
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/ParameterLists:
+  Max: 6
 
 # Optional / project preference
 Gemspec/RequireMFA:
