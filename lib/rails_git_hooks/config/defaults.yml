@@ -112,6 +112,22 @@ PreCommit:
     file_based: true
     install_hint: Add `gem "rails_best_practices"` to your Gemfile and run bundle install
 
+  ErbLint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [erblint]
+    command: [bundle, exec, erblint]
+    description: Run erblint on staged ERB files
+    file_based: true
+    install_hint: Add `gem "erblint"` to your Gemfile and run bundle install
+
 CommitMsg:
   JiraPrefix:
     enabled: true

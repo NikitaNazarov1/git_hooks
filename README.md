@@ -27,6 +27,7 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 | **pre-commit** | Before the commit is created (when running `git commit`). | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
 | **pre-commit** | Before the commit is created (when running `git commit`). | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
 | **pre-commit** | Before the commit is created (when running `git commit`). | `rails-best-practices` | Off   | Warn on Rails best practices violations (requires `rails_best_practices` gem). |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `erblint-check`       | Off   | Run `erblint` on staged ERB files (requires `erblint` gem). |
 | **pre-push**   | Before pushing to the remote (when running `git push`). | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
 | **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `bundle-install`   | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
 | **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `db-migrate`       | Off     | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |

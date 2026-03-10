@@ -11,6 +11,7 @@ module GitHooks
       Checks::PreCommit::WhitespaceCheck,
       Checks::PreCommit::RuboCop,
       Checks::PreCommit::RailsBestPractices,
+      Checks::PreCommit::ErbLint,
       Checks::CommitMsg::JiraPrefix,
       Checks::CommitMsg::NotEmpty,
       Checks::PrePush::RunTests,
