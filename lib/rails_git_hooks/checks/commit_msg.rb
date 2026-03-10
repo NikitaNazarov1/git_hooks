@@ -8,3 +8,4 @@ module GitHooks
 end
 
 require_relative 'commit_msg/jira_prefix'
+require_relative 'commit_msg/not_empty'

@@ -46,7 +46,8 @@ RSpec.describe GitHooks::Checks::PreCommit::RailsBestPractices do
       before do
         FileUtils.mkdir_p(File.dirname(ruby_path))
         File.write(ruby_path, 'class FooController; end')
-        allow(Open3).to receive(:capture2e).and_return(["app/controllers/foo_controller.rb:1 - use scope access\n", double(success?: false)])
+        allow(Open3).to receive(:capture2e)
+                    .and_return(["app/controllers/foo_controller.rb:1 - use scope access\n", double(success?: false)])
       end
 
       it 'returns fail with command output' do

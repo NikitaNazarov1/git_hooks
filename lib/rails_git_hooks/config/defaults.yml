@@ -126,6 +126,19 @@ CommitMsg:
     description: Prefix commit messages with ticket id from branch
     file_based: false
 
+  NotEmpty:
+    enabled: true
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Reject empty commit messages
+    file_based: false
+
 PrePush:
   RunTests:
     enabled: false

@@ -18,6 +18,7 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 | Hook         | Check key            | Enabled By Default | Description |
 |-------------|----------------------|---------|-------------|
 | **commit-msg** | `jira-prefix`        | ✅      | Prefix commit messages with Jira-style ticket IDs from the branch name (e.g. `[TICKET-123]`). |
+| **commit-msg** | `not-empty`          | ✅      | Reject empty commit messages. |
 | **pre-commit** | `default-branch`     | ✅      | Block commits on `master` / `main`; prompt to use a feature branch. |
 | **pre-commit** | `debugger-check`     | ✅      | Warn (or fail) on debugger statements in Ruby, JavaScript/TypeScript, and Python. |
 | **pre-commit** | `yaml-format-check`  | ✅      | Warn on invalid `.yml` / `.yaml` files. |
