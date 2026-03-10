@@ -8,3 +8,5 @@ module GitHooks
 end
 
 require_relative 'pre_push/run_tests'
+require_relative 'pre_push/run_pytest'
+require_relative 'pre_push/run_go_test'

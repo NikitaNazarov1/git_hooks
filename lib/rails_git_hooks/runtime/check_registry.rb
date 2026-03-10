@@ -10,12 +10,29 @@ module GitHooks
       Checks::PreCommit::MigrationsCheck,
       Checks::PreCommit::WhitespaceCheck,
       Checks::PreCommit::RuboCop,
+      Checks::PreCommit::RailsBestPractices,
+      Checks::PreCommit::ErbLint,
+      Checks::PreCommit::Eslint,
+      Checks::PreCommit::Golint,
+      Checks::PreCommit::HamlLint,
+      Checks::PreCommit::Jslint,
+      Checks::PreCommit::PhpLint,
+      Checks::PreCommit::Pylint,
+      Checks::PreCommit::ScssLint,
+      Checks::PreCommit::GoVet,
       Checks::CommitMsg::JiraPrefix,
+      Checks::CommitMsg::NotEmpty,
       Checks::PrePush::RunTests,
+      Checks::PrePush::RunPytest,
+      Checks::PrePush::RunGoTest,
       Checks::PostCheckout::BundleInstall,
       Checks::PostCheckout::DbMigrate,
+      Checks::PostCheckout::NpmInstall,
+      Checks::PostCheckout::YarnInstall,
       Checks::PostMerge::BundleInstall,
-      Checks::PostMerge::DbMigrate
+      Checks::PostMerge::DbMigrate,
+      Checks::PostMerge::NpmInstall,
+      Checks::PostMerge::YarnInstall
     ].freeze
 
     def self.all

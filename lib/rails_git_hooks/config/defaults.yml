@@ -96,6 +96,160 @@ PreCommit:
     file_based: true
     install_hint: Add `gem "rubocop"` to your Gemfile and run bundle install
 
+  RailsBestPractices:
+    enabled: false
+    quiet: true
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [rails_best_practices]
+    command: [bundle, exec, rails_best_practices]
+    description: Warn on Rails best practices violations
+    file_based: true
+    install_hint: Add `gem "rails_best_practices"` to your Gemfile and run bundle install
+
+  ErbLint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [erblint]
+    command: [bundle, exec, erblint]
+    description: Run erblint on staged ERB files
+    file_based: true
+    install_hint: Add `gem "erblint"` to your Gemfile and run bundle install
+
+  Eslint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [eslint]
+    command: [eslint]
+    description: Run eslint on staged JavaScript files
+    file_based: true
+    install_hint: Install eslint (e.g. npm install -D eslint) or override command in config
+
+  Golint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [golint]
+    command: [golint]
+    description: Run golint on staged Go files
+    file_based: true
+    install_hint: Install golint (e.g. go install golang.org/x/lint/golint@latest) or override command in config
+
+  HamlLint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [haml_lint]
+    command: [bundle, exec, haml-lint]
+    description: Run haml-lint on staged HAML files
+    file_based: true
+    install_hint: Add `gem "haml_lint"` to your Gemfile and run bundle install
+
+  Jslint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [jslint]
+    command: [jslint]
+    description: Run jslint on staged JavaScript files
+    file_based: true
+    install_hint: Install jslint (e.g. npm install -D jslint or npm install -g jslint) or override command in config
+
+  PhpLint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [php]
+    command: [php, "-l"]
+    description: Run php -l (syntax check) on staged PHP files
+    file_based: true
+    install_hint: Ensure PHP is installed and on PATH
+
+  Pylint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [pylint]
+    command: [pylint]
+    description: Run pylint on staged Python files
+    file_based: true
+    install_hint: Install pylint (e.g. pip install pylint) or override command in config
+
+  ScssLint:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [scss_lint]
+    command: [bundle, exec, scss-lint]
+    description: Run scss-lint on staged SCSS files
+    file_based: true
+    install_hint: Add `gem "scss_lint"` to your Gemfile and run bundle install
+
+  GoVet:
+    enabled: false
+    quiet: true
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [go]
+    command: [go, vet]
+    description: Run go vet on staged Go files
+    file_based: true
+    install_hint: Ensure Go toolchain is installed and on PATH
+
 CommitMsg:
   JiraPrefix:
     enabled: true
@@ -108,6 +262,19 @@ CommitMsg:
     dependencies: {}
     command: []
     description: Prefix commit messages with ticket id from branch
+    file_based: false
+
+  NotEmpty:
+    enabled: true
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies: {}
+    command: []
+    description: Reject empty commit messages
     file_based: false
 
 PrePush:
@@ -127,9 +294,39 @@ PrePush:
     file_based: false
     install_hint: Install test dependencies and ensure `bundle exec rspec` runs successfully
 
+  RunPytest:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [pytest]
+    command: [pytest]
+    description: Run pytest test suite before push
+    file_based: false
+    install_hint: Install pytest (e.g. pip install pytest) and ensure pytest runs successfully
+
+  RunGoTest:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [go]
+    command: [go, test, "./..."]
+    description: Run go test suite before push
+    file_based: false
+    install_hint: Ensure Go toolchain is installed and `go test ./...` runs successfully
+
 PostCheckout:
   BundleInstall:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -144,7 +341,7 @@ PostCheckout:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -158,9 +355,39 @@ PostCheckout:
     file_based: true
     install_hint: Rails app with db:migrate (or override command in config)
 
+  NpmInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, package-lock.json]
+    exclude: []
+    dependencies:
+      executables: [npm]
+    command: [npm, install]
+    description: Run npm install when package.json or package-lock.json changed (branch checkout)
+    file_based: true
+    install_hint: Ensure npm is available
+
+  YarnInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, yarn.lock]
+    exclude: []
+    dependencies:
+      executables: [yarn]
+    command: [yarn, install]
+    description: Run yarn install when package.json or yarn.lock changed (branch checkout)
+    file_based: true
+    install_hint: Ensure yarn is available
+
 PostMerge:
   BundleInstall:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -175,7 +402,7 @@ PostMerge:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -188,3 +415,33 @@ PostMerge:
     description: Run db:migrate when migrations or schema changed (after merge)
     file_based: true
     install_hint: Rails app with db:migrate (or override command in config)
+
+  NpmInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, package-lock.json]
+    exclude: []
+    dependencies:
+      executables: [npm]
+    command: [npm, install]
+    description: Run npm install when package.json or package-lock.json changed (after merge)
+    file_based: true
+    install_hint: Ensure npm is available
+
+  YarnInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, yarn.lock]
+    exclude: []
+    dependencies:
+      executables: [yarn]
+    command: [yarn, install]
+    description: Run yarn install when package.json or yarn.lock changed (after merge)
+    file_based: true
+    install_hint: Ensure yarn is available

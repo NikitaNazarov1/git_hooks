@@ -53,7 +53,7 @@ module GitHooks
       @modified_files ||= case @hook_name
                           when :pre_commit then @repo.staged_files
                           when :post_checkout
-                            argv[2] == '1' ? @repo.changed_files(argv[0], argv[1]) : []
+                            @argv[2] == '1' ? @repo.changed_files(@argv[0], @argv[1]) : []
                           when :post_merge
                             @repo.changed_files('ORIG_HEAD', 'HEAD')
                           else []
