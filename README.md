@@ -15,23 +15,27 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 
 ## Included hooks and checks
 
-| Hook         | Check key            | Enabled By Default | Description |
-|-------------|----------------------|---------|-------------|
-| **commit-msg** | `jira-prefix`        | ✅      | Prefix commit messages with Jira-style ticket IDs from the branch name (e.g. `[TICKET-123]`). |
-| **commit-msg** | `not-empty`          | ✅      | Reject empty commit messages. |
-| **pre-commit** | `default-branch`     | ✅      | Block commits on `master` / `main`; prompt to use a feature branch. |
-| **pre-commit** | `debugger-check`     | ✅      | Warn (or fail) on debugger statements in Ruby, JavaScript/TypeScript, and Python. |
-| **pre-commit** | `yaml-format-check`  | ✅      | Warn on invalid `.yml` / `.yaml` files. |
-| **pre-commit** | `json-format-check`  | ✅      | Warn on invalid `.json` files. |
-| **pre-commit** | `migrations-check`   | ✅      | Warn when migration files are staged but schema/data_schema files are not. |
-| **pre-commit** | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
-| **pre-commit** | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
-| **pre-commit** | `rails-best-practices` | Off   | Warn on Rails best practices violations (requires `rails_best_practices` gem). |
-| **pre-push**   | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
-| **post-checkout** | `bundle-install`   | ✅      | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
-| **post-checkout** | `db-migrate`       | ✅      | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
-| **post-merge** | `bundle-install`     | ✅      | Run `bundle install` when Gemfile or Gemfile.lock changed after a merge. |
-| **post-merge** | `db-migrate`        | ✅      | Run `rails db:migrate` when migrations or schema changed after a merge. |
+| Hook         | Triggers at | Check key            | Enabled By Default | Description |
+|-------------|-------------|----------------------|---------|-------------|
+| **commit-msg** | After the user finishes editing the commit message, before the commit is created. | `jira-prefix`        | ✅      | Prefix commit messages with Jira-style ticket IDs from the branch name (e.g. `[TICKET-123]`). |
+| **commit-msg** | After the user finishes editing the commit message, before the commit is created. | `not-empty`          | ✅      | Reject empty commit messages. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `default-branch`     | ✅      | Block commits on `master` / `main`; prompt to use a feature branch. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `debugger-check`     | ✅      | Warn (or fail) on debugger statements in Ruby, JavaScript/TypeScript, and Python. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `yaml-format-check`  | ✅      | Warn on invalid `.yml` / `.yaml` files. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `json-format-check`  | ✅      | Warn on invalid `.json` files. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `migrations-check`   | ✅      | Warn when migration files are staged but schema/data_schema files are not. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
+| **pre-commit** | Before the commit is created (when running `git commit`). | `rails-best-practices` | Off   | Warn on Rails best practices violations (requires `rails_best_practices` gem). |
+| **pre-push**   | Before pushing to the remote (when running `git push`). | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
+| **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `bundle-install`   | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
+| **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `db-migrate`       | Off     | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
+| **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `npm-install`      | Off     | Run `npm install` when package.json or package-lock.json changed after a branch checkout. |
+| **post-checkout** | After switching branches or restoring files (e.g. `git checkout`). | `yarn-install`     | Off     | Run `yarn install` when package.json or yarn.lock changed after a branch checkout. |
+| **post-merge** | After a merge completes (when running `git merge`). | `bundle-install`     | Off     | Run `bundle install` when Gemfile or Gemfile.lock changed after a merge. |
+| **post-merge** | After a merge completes (when running `git merge`). | `db-migrate`        | Off     | Run `rails db:migrate` when migrations or schema changed after a merge. |
+| **post-merge** | After a merge completes (when running `git merge`). | `npm-install`       | Off     | Run `npm install` when package.json or package-lock.json changed after a merge. |
+| **post-merge** | After a merge completes (when running `git merge`). | `yarn-install`      | Off     | Run `yarn install` when package.json or yarn.lock changed after a merge. |
 
 ## Quick start
 

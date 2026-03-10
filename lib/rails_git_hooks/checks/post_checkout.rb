@@ -9,3 +9,5 @@ end
 
 require_relative 'post_checkout/bundle_install'
 require_relative 'post_checkout/db_migrate'
+require_relative 'post_checkout/npm_install'
+require_relative 'post_checkout/yarn_install'

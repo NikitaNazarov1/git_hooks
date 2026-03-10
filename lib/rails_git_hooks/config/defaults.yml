@@ -158,7 +158,7 @@ PrePush:
 
 PostCheckout:
   BundleInstall:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -173,7 +173,7 @@ PostCheckout:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -187,9 +187,39 @@ PostCheckout:
     file_based: true
     install_hint: Rails app with db:migrate (or override command in config)
 
+  NpmInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, package-lock.json]
+    exclude: []
+    dependencies:
+      executables: [npm]
+    command: [npm, install]
+    description: Run npm install when package.json or package-lock.json changed (branch checkout)
+    file_based: true
+    install_hint: Ensure npm is available
+
+  YarnInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, yarn.lock]
+    exclude: []
+    dependencies:
+      executables: [yarn]
+    command: [yarn, install]
+    description: Run yarn install when package.json or yarn.lock changed (branch checkout)
+    file_based: true
+    install_hint: Ensure yarn is available
+
 PostMerge:
   BundleInstall:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -204,7 +234,7 @@ PostMerge:
     install_hint: Ensure bundle is available
 
   DbMigrate:
-    enabled: true
+    enabled: false
     quiet: false
     on_fail: fail
     on_warn: warn
@@ -217,3 +247,33 @@ PostMerge:
     description: Run db:migrate when migrations or schema changed (after merge)
     file_based: true
     install_hint: Rails app with db:migrate (or override command in config)
+
+  NpmInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, package-lock.json]
+    exclude: []
+    dependencies:
+      executables: [npm]
+    command: [npm, install]
+    description: Run npm install when package.json or package-lock.json changed (after merge)
+    file_based: true
+    install_hint: Ensure npm is available
+
+  YarnInstall:
+    enabled: false
+    quiet: false
+    on_fail: fail
+    on_warn: warn
+    on_missing_dependency: warn
+    include: [package.json, yarn.lock]
+    exclude: []
+    dependencies:
+      executables: [yarn]
+    command: [yarn, install]
+    description: Run yarn install when package.json or yarn.lock changed (after merge)
+    file_based: true
+    install_hint: Ensure yarn is available

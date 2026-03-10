@@ -16,8 +16,12 @@ module GitHooks
       Checks::PrePush::RunTests,
       Checks::PostCheckout::BundleInstall,
       Checks::PostCheckout::DbMigrate,
+      Checks::PostCheckout::NpmInstall,
+      Checks::PostCheckout::YarnInstall,
       Checks::PostMerge::BundleInstall,
-      Checks::PostMerge::DbMigrate
+      Checks::PostMerge::DbMigrate,
+      Checks::PostMerge::NpmInstall,
+      Checks::PostMerge::YarnInstall
     ].freeze
 
     def self.all
