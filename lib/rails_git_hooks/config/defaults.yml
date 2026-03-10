@@ -96,6 +96,22 @@ PreCommit:
     file_based: true
     install_hint: Add `gem "rubocop"` to your Gemfile and run bundle install
 
+  RailsBestPractices:
+    enabled: false
+    quiet: true
+    on_fail: warn
+    on_warn: warn
+    on_missing_dependency: warn
+    include: []
+    exclude: []
+    dependencies:
+      executables: [bundle]
+      libraries: [rails_best_practices]
+    command: [bundle, exec, rails_best_practices]
+    description: Warn on Rails best practices violations
+    file_based: true
+    install_hint: Add `gem "rails_best_practices"` to your Gemfile and run bundle install
+
 CommitMsg:
   JiraPrefix:
     enabled: true

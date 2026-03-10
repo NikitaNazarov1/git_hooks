@@ -25,6 +25,7 @@ Git hooks for Rails and Ruby projects: sensible defaults out of the box, optiona
 | **pre-commit** | `migrations-check`   | ✅      | Warn when migration files are staged but schema/data_schema files are not. |
 | **pre-commit** | `whitespace-check`   | Off     | Fail on trailing whitespace and merge conflict markers. |
 | **pre-commit** | `rubocop-check`      | Off     | Run RuboCop on staged Ruby files (requires `rubocop` in the project). |
+| **pre-commit** | `rails-best-practices` | Off   | Warn on Rails best practices violations (requires `rails_best_practices` gem). |
 | **pre-push**   | `run-tests`          | Off     | Run test suite before push (default: `bundle exec rspec`). Enable in config to install pre-push. |
 | **post-checkout** | `bundle-install`   | ✅      | Run `bundle install` when Gemfile or Gemfile.lock changed after a branch checkout. |
 | **post-checkout** | `db-migrate`       | ✅      | Run `rails db:migrate` when migrations or schema changed after a branch checkout. |
@@ -104,13 +105,6 @@ PreCommit:
 | `include` | Glob patterns for files the check applies to. |
 | `exclude` | Glob patterns to exclude from `include`. |
 | `command` | Override the command for checks that run external commands. |
-
-## CLI reference
-
-| Command | Description |
-|---------|--------------|
-| `rails_git_hooks install` | Install hooks that have at least one enabled check in the merged config (defaults + .rails_git_hooks.yml + .rails_git_hooks.local.yml). |
-| `rails_git_hooks init` | Create an empty `.rails_git_hooks.yml`. |
 
 ## Contributing
 

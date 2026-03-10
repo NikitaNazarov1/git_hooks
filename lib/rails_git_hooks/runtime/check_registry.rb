@@ -10,6 +10,7 @@ module GitHooks
       Checks::PreCommit::MigrationsCheck,
       Checks::PreCommit::WhitespaceCheck,
       Checks::PreCommit::RuboCop,
+      Checks::PreCommit::RailsBestPractices,
       Checks::CommitMsg::JiraPrefix,
       Checks::PrePush::RunTests,
       Checks::PostCheckout::BundleInstall,
