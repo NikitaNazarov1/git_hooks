@@ -57,5 +57,29 @@ RSpec.describe GitHooks::Checks::CommitMsg::JiraPrefix do
         expect(File.read(msg_path)).to eq("[TIX-99] Add feature\n")
       end
     end
+
+    context 'when branch has ticket with X(s) (placeholder id)' do
+      let(:branch) { 'feature/PROJ-XX' }
+
+      before { File.write(msg_path, "WIP\n") }
+
+      it 'prepends prefix and returns pass' do
+        check = described_class.new(config: config, context: context)
+        expect(check.run).to be_pass
+        expect(File.read(msg_path)).to eq("[PROJ-XX] WIP\n")
+      end
+    end
+
+    context 'when branch has ticket with mixed-case project key (pattern is case-insensitive)' do
+      let(:branch) { 'feature/abc-123' }
+
+      before { File.write(msg_path, "Fix something\n") }
+
+      it 'prepends prefix and returns pass' do
+        check = described_class.new(config: config, context: context)
+        expect(check.run).to be_pass
+        expect(File.read(msg_path)).to eq("[abc-123] Fix something\n")
+      end
+    end
   end
 end

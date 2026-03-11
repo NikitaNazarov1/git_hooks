@@ -4,7 +4,7 @@ module GitHooks
   module Checks
     module CommitMsg
       class JiraPrefix < Base
-        TICKET_PATTERN = /([A-Z]{2,5}-\d+)/.freeze
+        TICKET_PATTERN = /([A-Z]{2,5}-(X+|\d+))/i.freeze
 
         check_definition key: 'jira-prefix',
                          hook: :commit_msg,
